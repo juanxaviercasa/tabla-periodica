@@ -16,12 +16,17 @@ export function getStudyStreak() {
   return readProgress().streak ?? 0;
 }
 
-export function saveQuizResult(topicId, score, total) {
+export function getMistakes(topicId) {
+  return readProgress().mistakes?.[topicId] ?? [];
+}
+
+export function saveQuizResult(topicId, score, total, mistakes = []) {
   const progress = readProgress();
   const today = new Date().toISOString().slice(0, 10);
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const best = progress.scores[topicId];
   progress.scores[topicId] = best ? { score: Math.max(best.score, score), total } : { score, total };
+  progress.mistakes = { ...(progress.mistakes ?? {}), [topicId]: mistakes };
   progress.streak = progress.lastStudyDate === today ? progress.streak : progress.lastStudyDate === yesterday ? progress.streak + 1 : 1;
   progress.lastStudyDate = today;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
