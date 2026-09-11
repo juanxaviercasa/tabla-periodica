@@ -30,14 +30,14 @@ const elements = [
 ].map(([z, symbol, name, mass, col, row, category, family]) => ({ z, symbol, name, mass, col, row, category, family }));
 
 const quizTopicMap = [
-  ["los-38", "elementos-38", 1, "Abre la tabla de arriba", "Reconoce los elementos prioritarios y su ubicación."],
-  ["valencias-variables", "valencias", 2, "Fe · Cu · Mn · Cr · Pb · Sn · Hg", "Identifica estados de oxidación frecuentes."],
-  ["nomenclatura-8-pasos", "nomenclatura", 3, "De óxido básico a hidruro", "Ordena el procedimiento para nombrar compuestos."],
-  ["iones-poliatomicos", "iones", 4, "Agrupados por familia", "Memoriza nombres, fórmulas y cargas."],
-  ["configuracion-moller", "configuracion", 5, "Con los anómalos de Cr y Cu", "Construye configuraciones sin perder el orden energético."],
-  ["tendencias-periodicas", "tendencias", 6, "Solo dos direcciones opuestas", "Compara radio, energía de ionización y electronegatividad."],
-  ["estequiometria-mol", "estequiometria", 7, "El puente entre gramos y partículas", "Resuelve conversiones y proporciones químicas."],
-  ["enlace-quimico", "enlace", 8, "Iónico · covalente · metálico", "Distingue cómo se unen los átomos."]
+  ["los-38", "elementos-38", 1, "Abre la tabla de arriba", "Reconoce los elementos prioritarios y su ubicación.", "Base", "8 min", "Empieza aquí: te da el mapa del curso."],
+  ["valencias-variables", "valencias", 2, "Fe · Cu · Mn · Cr · Pb · Sn · Hg", "Identifica estados de oxidación frecuentes.", "Base", "10 min", "Después de ubicar los 38 elementos."],
+  ["nomenclatura-8-pasos", "nomenclatura", 3, "De óxido básico a hidruro", "Ordena el procedimiento para nombrar compuestos.", "Intermedio", "12 min", "Usa las valencias variables como apoyo."],
+  ["iones-poliatomicos", "iones", 4, "Agrupados por familia", "Memoriza nombres, fórmulas y cargas.", "Intermedio", "10 min", "Conviene dominar nomenclatura primero."],
+  ["configuracion-moller", "configuracion", 5, "Con los anómalos de Cr y Cu", "Construye configuraciones sin perder el orden energético.", "Intermedio", "12 min", "Requiere reconocer símbolos y números atómicos."],
+  ["tendencias-periodicas", "tendencias", 6, "Solo dos direcciones opuestas", "Compara radio, energía de ionización y electronegatividad.", "Intermedio", "10 min", "Lee la tabla antes de memorizar direcciones."],
+  ["estequiometria-mol", "estequiometria", 7, "El puente entre gramos y partículas", "Resuelve conversiones y proporciones químicas.", "Aplicación", "14 min", "Apóyate en masa atómica y número de Avogadro."],
+  ["enlace-quimico", "enlace", 8, "Iónico · covalente · metálico", "Distingue cómo se unen los átomos.", "Aplicación", "10 min", "Cierra la ruta conectando estructura y propiedades."]
 ];
 
 const answerIndex = { a: 0, b: 1, c: 2, d: 3 };
@@ -49,12 +49,15 @@ const normalizeQuestions = (questions) => questions.map((question) => ({
   explain: question.explicacion
 }));
 
-export const topics = quizTopicMap.map(([id, bankId, number, tag, description]) => ({
+export const topics = quizTopicMap.map(([id, bankId, number, tag, description, level, duration, prerequisite]) => ({
   id,
   number,
   title: quizBank[bankId].titulo,
   tag,
   description,
+  level,
+  duration,
+  prerequisite,
   questions: normalizeQuestions(quizBank[bankId].preguntas)
 }));
 
