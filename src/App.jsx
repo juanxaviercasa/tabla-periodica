@@ -19,6 +19,7 @@ function Layout({ children }) {
     </header>
     {children}
     <aside className="mobile-cta" aria-label="Material de química por WhatsApp"><span>¿Quieres todo el material?</span><a href={contactUrl} target="_blank" rel="noreferrer"><MessageCircle size={15} aria-hidden="true" /> WhatsApp</a></aside>
+    <footer className="site-footer">Desarrollado por <a href="https://juan.cabellosalirrosas.com" target="_blank" rel="noreferrer">Xavier Cabello</a></footer>
   </div>;
 }
 
