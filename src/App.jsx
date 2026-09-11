@@ -14,7 +14,7 @@ function Layout({ children }) {
   useEffect(() => { document.documentElement.dataset.theme = darkMode ? "dark" : "light"; localStorage.setItem("quimica-preuni-theme", darkMode ? "dark" : "light"); }, [darkMode]);
   return <div className="app-shell">
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="Química Preuni, inicio"><img src={darkMode ? "/logo-dark.svg" : "/logo.svg"} alt="Química Preuni · Aprende lo que sí cae" /></Link>
+      <Link className="brand" to="/" aria-label="38 Elementos, inicio"><img src={darkMode ? "/logo-dark.svg" : "/logo.svg"} alt="38 Elementos · La tabla periódica que sí cae" /></Link>
       <div className="header-actions"><span className="streak"><Flame size={16} aria-hidden="true" /> {streak} {streak === 1 ? "día" : "días"}</span><button className="theme-toggle" onClick={() => setDarkMode((current) => !current)} aria-label={darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"} title={darkMode ? "Tema claro" : "Tema oscuro"}>{darkMode ? <Sun size={17} /> : <Moon size={17} />}</button></div>
     </header>
     {children}
