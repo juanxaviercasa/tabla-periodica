@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Search } from "lucide-react";
+import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Search, Sun } from "lucide-react";
 import { categories, elements, topics } from "./data.js";
 import { contactUrl } from "./config.js";
 import { getBestScore, getMistakes, getStudyStreak } from "./storage.js";
@@ -9,11 +9,13 @@ const QuizPage = lazy(() => import("./QuizPage.jsx"));
 
 function Layout({ children }) {
   const [streak, setStreak] = useState(getStudyStreak());
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("quimica-preuni-theme") === "dark");
   useEffect(() => { const update = () => setStreak(getStudyStreak()); window.addEventListener("study:updated", update); return () => window.removeEventListener("study:updated", update); }, []);
+  useEffect(() => { document.documentElement.dataset.theme = darkMode ? "dark" : "light"; localStorage.setItem("quimica-preuni-theme", darkMode ? "dark" : "light"); }, [darkMode]);
   return <div className="app-shell">
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="Química Preuni, inicio"><img src="/logo.svg" alt="Química Preuni · Aprende lo que sí cae" /></Link>
-      <span className="streak"><Flame size={16} aria-hidden="true" /> {streak} {streak === 1 ? "día" : "días"}</span>
+      <Link className="brand" to="/" aria-label="Química Preuni, inicio"><img src={darkMode ? "/logo-dark.svg" : "/logo.svg"} alt="Química Preuni · Aprende lo que sí cae" /></Link>
+      <div className="header-actions"><span className="streak"><Flame size={16} aria-hidden="true" /> {streak} {streak === 1 ? "día" : "días"}</span><button className="theme-toggle" onClick={() => setDarkMode((current) => !current)} aria-label={darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"} title={darkMode ? "Tema claro" : "Tema oscuro"}>{darkMode ? <Sun size={17} /> : <Moon size={17} />}</button></div>
     </header>
     {children}
     <aside className="mobile-cta" aria-label="Material de química por WhatsApp"><span>¿Quieres todo el material?</span><a href={contactUrl} target="_blank" rel="noreferrer"><MessageCircle size={15} aria-hidden="true" /> WhatsApp</a></aside>
