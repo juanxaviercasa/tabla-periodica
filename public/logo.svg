@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 72" role="img" aria-labelledby="title desc">
+  <title id="title">Química Preuni</title>
+  <desc id="desc">Logotipo Q38 de Química Preuni</desc>
+  <defs>
+    <linearGradient id="mark" x1="8" y1="8" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7B3FA0"/>
+      <stop offset="1" stop-color="#54236F"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="64" height="64" rx="15" fill="url(#mark)"/>
+  <ellipse cx="36" cy="36" rx="25" ry="10" fill="none" stroke="#BEE7D7" stroke-width="2.5" transform="rotate(-32 36 36)"/>
+  <circle cx="57" cy="22" r="4" fill="#F2B866"/>
+  <path d="M37 22a14 14 0 1 0 10 24" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M42 43l7 7" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <text x="13" y="18" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="700">38</text>
+  <text x="84" y="35" fill="#54236F" font-family="Archivo, Arial, sans-serif" font-size="24" font-weight="800">Química Preuni</text>
+  <text x="86" y="54" fill="#65706D" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1">APRENDE LO QUE SÍ CAE</text>
+</svg>

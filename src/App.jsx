@@ -12,7 +12,7 @@ function Layout({ children }) {
   useEffect(() => { const update = () => setStreak(getStudyStreak()); window.addEventListener("study:updated", update); return () => window.removeEventListener("study:updated", update); }, []);
   return <div className="app-shell">
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="Química Preuni, inicio"><span className="brand-mark">Q</span><span><strong>Química Preuni</strong><small>Admisión UNI · San Marcos · CEPRE</small></span></Link>
+      <Link className="brand" to="/" aria-label="Química Preuni, inicio"><img src="/logo.svg" alt="Química Preuni · Aprende lo que sí cae" /></Link>
       <span className="streak"><Flame size={16} aria-hidden="true" /> {streak} {streak === 1 ? "día" : "días"}</span>
     </header>
     {children}
