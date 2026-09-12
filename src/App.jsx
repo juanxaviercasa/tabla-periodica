@@ -22,6 +22,61 @@ function layerValue(element, layer) {
   return element.family;
 }
 
+const chemistryFacts = [
+  "El Francio es tan escaso que se estima que solo hay entre 20 a 30 gramos en toda la Tierra en cualquier momento.",
+  "El Mercurio y el Bromo son los únicos elementos de la tabla que son líquidos a temperatura ambiente.",
+  "El Carbono es la base de toda la vida conocida y puede formar más compuestos que todos los demás elementos combinados.",
+  "El Titanio es tan fuerte como el acero pero 45% más ligero, y es casi completamente inmune a la corrosión."
+];
+
+function FactCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % chemistryFacts.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="fact-carousel" aria-label="Datos curiosos sobre química">
+      <span className="eyebrow">💡 ¿Sabías que...?</span>
+      <p className="fact-text" key={currentIndex}>{chemistryFacts[currentIndex]}</p>
+      <div className="carousel-dots">
+        {chemistryFacts.map((_, idx) => (
+          <button 
+            key={idx} 
+            className={`dot ${idx === currentIndex ? 'active' : ''}`}
+            onClick={() => setCurrentIndex(idx)}
+            aria-label={`Ver dato ${idx + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ElementLegend() {
+  return (
+    <div className="element-legend">
+      <span className="eyebrow">Cómo leer esta tabla:</span>
+      <div className="legend-anatomy">
+        <div className="element family-no-metal legend-box">
+          <small>6</small>
+          <b aria-hidden="true">C</b>
+          <span aria-hidden="true">12.011</span>
+        </div>
+        <div className="legend-labels">
+          <div className="label-item">← Número Atómico (Z)</div>
+          <div className="label-item">← Símbolo Químico</div>
+          <div className="label-item">← Propiedad filtrada</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Layout({ children }) {
   const [streak, setStreak] = useState(getStudyStreak());
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("quimica-preuni-theme") === "dark");
@@ -58,15 +113,19 @@ function Home() {
     <section className="hero"><img src="/visuals/hero-periodic-map.jpg" alt="Mapa de la tabla periódica" className="hero-img" loading="lazy" /><div className="hero-content"><div className="hero-number">38 <span>de 118</span></div><h1>Esto es lo que necesitas memorizar.</h1><p>Los 38 elementos marcados son los que sí caen en el examen. Los otros 80 están en gris: no pierdas tiempo con ellos.</p></div></section>
     <section className="study-guide" aria-labelledby="guide-heading"><div><span className="eyebrow">Ruta sugerida</span><h2 id="guide-heading">Aprende en orden, practica con intención.</h2><p>{completedTopics === 0 ? "Empieza por la base y avanza tema a tema." : `Has completado ${completedTopics} de ${topics.length} temas. Tu siguiente paso es ${nextTopic.title}.`}</p></div><Link className="primary-action" to={`/quiz/${nextTopic.id}`}><ListChecks size={16} aria-hidden="true" /> {completedTopics === topics.length ? "Repasar de nuevo" : "Continuar ruta"}</Link><div className="route-progress" aria-label={`${completedTopics} de ${topics.length} temas completados`}><span style={{ width: `${(completedTopics / topics.length) * 100}%` }} /></div>{completedTopics === topics.length && <img src="/visuals/module-certificate.jpg" alt="Certificado de completitud" className="certificate-img" loading="lazy" />}</section>
     <section className="table-section" aria-labelledby="table-heading">
-      <img src="/visuals/periodic-layers.jpg" alt="Capas de la tabla periódica" className="section-banner" loading="lazy" />
+      <FactCarousel />
       <h2 id="table-heading" className="sr-only">Tabla periódica priorizada</h2>
       <label className="search"><Search size={17} aria-hidden="true" /><span className="sr-only">Buscar elemento</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Busca por nombre, símbolo o número — ej. hierro, Fe, 26" /></label>
       <div className="filters" role="group" aria-label="Filtrar elementos">{categories.map((item) => <button key={item.id} className={category === item.id ? "active" : ""} onClick={() => setCategory(item.id)} aria-pressed={category === item.id}>{item.label} <small>{item.count}</small></button>)}</div>
-      <div className="table-layers" role="group" aria-label="Capas de la tabla">{tableLayers.map((layer) => <button key={layer.id} className={tableLayer === layer.id ? "active" : ""} onClick={() => setTableLayer(layer.id)} aria-pressed={tableLayer === layer.id}>{layer.label}</button>)}</div>
+      <div className="table-controls-wrapper">
+        <div className="table-layers" role="group" aria-label="Capas de la tabla">{tableLayers.map((layer) => <button key={layer.id} className={tableLayer === layer.id ? "active" : ""} onClick={() => setTableLayer(layer.id)} aria-pressed={tableLayer === layer.id}>{layer.label}</button>)}</div>
+        <ElementLegend />
+      </div>
       <div className={`periodic-grid layer-${tableLayer}`} aria-live="polite">{filtered.map((element) => <button key={element.z} className={`element family-${element.family.toLowerCase().replaceAll(" ", "-")}`} style={{ gridColumn: element.col, gridRow: element.row }} aria-label={`${element.name}, número atómico ${element.z}`}><small>{element.z}</small><b aria-hidden="true">{element.symbol}</b><span aria-hidden="true">{tableLayer === "families" ? element.mass : layerValue(element, tableLayer)}</span></button>)}</div>
       {!filtered.length && <p className="empty-state">No encontramos elementos con esa búsqueda.</p>}
     </section>
     <section className="topics" aria-labelledby="topics-heading"><div className="section-heading"><div><h2 id="topics-heading">Chuletas por tema</h2><p>Ocho recorridos para estudiar, practicar y revisar.</p></div><span>{completedTopics}/{topics.length} completados</span></div>{topics.map((topic) => { const best = getBestScore(topic.id); const mistakes = getMistakes(topic.id); return <article className={`topic ${openTopic === topic.id ? "expanded" : ""}`} key={topic.id}><button className="topic-toggle" onClick={() => setOpenTopic(openTopic === topic.id ? null : topic.id)} aria-expanded={openTopic === topic.id}><span className="topic-number">{topic.number}</span><span><strong>{topic.title}</strong><small>{topic.tag}{best ? ` · Mejor: ${best.score}/${best.total}` : " · Sin intentar"}</small></span><ChevronDown size={17} aria-hidden="true" /></button>{openTopic === topic.id && <div className="topic-body"><div className="topic-meta"><span>{topic.level}</span><span>{topic.duration}</span></div><p>{topic.description}</p><p className="prerequisite"><strong>Antes de empezar:</strong> {topic.prerequisite}</p><div className="topic-actions"><Link className="primary-action" to={`/quiz/${topic.id}`}><ListChecks size={16} aria-hidden="true" /> Practicar este tema</Link>{mistakes.length > 0 && <Link className="secondary-action" to={`/quiz/${topic.id}?mode=mistakes`}><CheckCircle size={16} aria-hidden="true" /> Repasar {mistakes.length} error{mistakes.length === 1 ? "" : "es"}</Link>}</div></div>}</article>; })}</section>
+    <img src="/visuals/periodic-layers.jpg" alt="Separador estético" className="footer-banner" loading="lazy" />
   </main>;
 }
 
