@@ -89,58 +89,98 @@ function ElementModal({ element, onClose }) {
   if (!element) return null;
   const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
   
+  const getElectronsPerShell = (z, row) => {
+    let remaining = z;
+    const maxPerShell = [2, 8, 18, 32, 32, 18, 8];
+    const shells = [];
+    for (let i = 0; i < row; i++) {
+      let max = maxPerShell[i] || 8;
+      if (i === row - 1) { 
+        shells.push(remaining);
+        break;
+      }
+      let e = Math.min(remaining, max);
+      shells.push(e);
+      remaining -= e;
+    }
+    while(shells.length < row) shells.push(1);
+    return shells;
+  };
+
+  const electronsPerShell = getElectronsPerShell(element.z, element.row);
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Cerrar"><X size={24} /></button>
+    <div className={`modal-overlay-3d ${familyClass}-bg`} onClick={onClose}>
+      <button className="modal-close-3d" onClick={onClose} aria-label="Cerrar"><X size={28} /></button>
+      
+      <div className="modal-grid-3d" onClick={e => e.stopPropagation()}>
         
-        <div className="modal-header">
-          <div className={`element-badge ${familyClass}`}>
-            <small>{element.z}</small>
-            <b>{element.symbol}</b>
-            <span>{element.mass}</span>
-          </div>
-          <div className="modal-title">
-            <h2>{element.name}</h2>
-            <span className="element-family">{element.family}</span>
+        {/* Left Side: 3D Atom Model */}
+        <div className="atom-container-3d">
+          <div className="atom-3d">
+            <div className="nucleus-3d">
+              <span>{element.z}p⁺</span>
+              <span>{Math.round(element.mass) - element.z}n⁰</span>
+            </div>
+            
+            {electronsPerShell.map((numElectrons, i) => {
+              const radius = (i + 1) * 45 + 50; 
+              return (
+                <div key={i} className={`orbit-3d orbit-layer-${i}`} style={{ width: `${radius}px`, height: `${radius}px`, animationDelay: `-${i * 1.5}s` }}>
+                  {Array.from({length: Math.min(numElectrons, 32)}).map((_, j) => {
+                    const angle = (360 / numElectrons) * j;
+                    return (
+                      <div 
+                        key={j} 
+                        className="electron-3d" 
+                        style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(${radius / 2}px)` }}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        <div className="modal-body">
-          <div className="atomic-model-container">
-            <div className="atomic-model">
-              <div className="nucleus">
-                <span>{element.z}p⁺</span>
-                <span>{Math.round(element.mass) - element.z}n⁰</span>
-              </div>
-              {Array.from({ length: element.row }).map((_, i) => (
-                <div key={i} className={`orbit orbit-${i + 1}`} style={{ width: `${(i + 1) * 36 + 60}px`, height: `${(i + 1) * 36 + 60}px` }}></div>
-              ))}
+        {/* Right Side: Rich Data Panel */}
+        <div className="data-panel-3d">
+          <div className="element-hero">
+            <span className="hero-z">Z = {element.z}</span>
+            <h1 className="hero-symbol">{element.symbol}</h1>
+            <h2 className="hero-name">{element.name}</h2>
+            <div>
+              <span className="hero-family">{element.family}</span>
             </div>
           </div>
 
-          <div className="element-data-grid">
-            <div className="data-card">
-              <small>Configuración Electrónica</small>
-              <strong>{element.config || '—'}</strong>
+          <div className="data-grid-3d">
+            <div className="glass-card">
+              <span className="glass-label">Masa Atómica</span>
+              <strong className="glass-value">{element.mass} u</strong>
             </div>
-            <div className="data-card">
-              <small>Estados de Oxidación</small>
-              <strong>{element.ox || '—'}</strong>
+            <div className="glass-card">
+              <span className="glass-label">Config. Electrónica</span>
+              <strong className="glass-value">{element.config || '—'}</strong>
             </div>
-            <div className="data-card">
-              <small>Electronegatividad (Pauling)</small>
-              <strong>{element.en || '—'}</strong>
+            <div className="glass-card">
+              <span className="glass-label">Estados de Oxidación</span>
+              <strong className="glass-value">{element.ox || '—'}</strong>
             </div>
-            <div className="data-card">
-              <small>Ubicación</small>
-              <strong>Grupo {element.col} / Periodo {element.row}</strong>
+            <div className="glass-card">
+              <span className="glass-label">Electronegatividad</span>
+              <strong className="glass-value">{element.en || '—'}</strong>
+            </div>
+            <div className="glass-card">
+              <span className="glass-label">Ubicación en Tabla</span>
+              <strong className="glass-value">Grupo {element.col} / Periodo {element.row}</strong>
             </div>
           </div>
           
           {element.category === "variable" && (
-            <div className="didactic-note">
-              <strong>⚠️ Cuidado en Nomenclatura:</strong> Este elemento usa sufijos (oso/ico) según el estado de oxidación con el que trabaje. Revisa bien sus valencias.
+            <div className="didactic-alert-3d">
+              <strong>⚠️ Cuidado en Nomenclatura</strong>
+              <p>Este elemento usa diferentes sufijos (oso/ico) u otros prefijos según el estado de oxidación con el que trabaje. Revisa bien sus valencias antes de nombrar compuestos.</p>
             </div>
           )}
         </div>
