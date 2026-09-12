@@ -31,16 +31,24 @@ const chemistryFacts = [
 
 function FactCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
+    if (isPaused) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % chemistryFacts.length);
-    }, 8000);
+    }, 15000); // 15 segundos
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaused]);
 
   return (
-    <div className="fact-carousel" aria-label="Datos curiosos sobre química">
+    <div 
+      className="fact-carousel" 
+      aria-label="Datos curiosos sobre química"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onClick={() => setIsPaused(true)}
+    >
       <span className="eyebrow">💡 ¿Sabías que...?</span>
       <p className="fact-text" key={currentIndex}>{chemistryFacts[currentIndex]}</p>
       <div className="carousel-dots">
@@ -48,7 +56,7 @@ function FactCarousel() {
           <button 
             key={idx} 
             className={`dot ${idx === currentIndex ? 'active' : ''}`}
-            onClick={() => setCurrentIndex(idx)}
+            onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); setIsPaused(true); }}
             aria-label={`Ver dato ${idx + 1}`}
           />
         ))}
@@ -70,7 +78,7 @@ function ElementLegend() {
         <div className="legend-labels">
           <div className="label-item">← Número Atómico (Z)</div>
           <div className="label-item">← Símbolo Químico</div>
-          <div className="label-item">← Propiedad filtrada</div>
+          <div className="label-item">← Masa Atómica</div>
         </div>
       </div>
     </div>
