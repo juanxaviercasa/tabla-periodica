@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Search, Sun } from "lucide-react";
+import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Search, Sun, X } from "lucide-react";
 import { categories, elements, topics } from "./data.js";
 import { contactUrl } from "./config.js";
 import { getBestScore, getDiagnostic, getDueReviewCount, getDueQuestions, getMistakes, getStudyStreak } from "./storage.js";
@@ -85,6 +85,70 @@ function ElementLegend() {
   );
 }
 
+function ElementModal({ element, onClose }) {
+  if (!element) return null;
+  const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
+  
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose} aria-label="Cerrar"><X size={24} /></button>
+        
+        <div className="modal-header">
+          <div className={`element-badge ${familyClass}`}>
+            <small>{element.z}</small>
+            <b>{element.symbol}</b>
+            <span>{element.mass}</span>
+          </div>
+          <div className="modal-title">
+            <h2>{element.name}</h2>
+            <span className="element-family">{element.family}</span>
+          </div>
+        </div>
+
+        <div className="modal-body">
+          <div className="atomic-model-container">
+            <div className="atomic-model">
+              <div className="nucleus">
+                <span>{element.z}p⁺</span>
+                <span>{Math.round(element.mass) - element.z}n⁰</span>
+              </div>
+              {Array.from({ length: element.row }).map((_, i) => (
+                <div key={i} className={`orbit orbit-${i + 1}`} style={{ width: `${(i + 1) * 36 + 60}px`, height: `${(i + 1) * 36 + 60}px` }}></div>
+              ))}
+            </div>
+          </div>
+
+          <div className="element-data-grid">
+            <div className="data-card">
+              <small>Configuración Electrónica</small>
+              <strong>{element.config || '—'}</strong>
+            </div>
+            <div className="data-card">
+              <small>Estados de Oxidación</small>
+              <strong>{element.ox || '—'}</strong>
+            </div>
+            <div className="data-card">
+              <small>Electronegatividad (Pauling)</small>
+              <strong>{element.en || '—'}</strong>
+            </div>
+            <div className="data-card">
+              <small>Ubicación</small>
+              <strong>Grupo {element.col} / Periodo {element.row}</strong>
+            </div>
+          </div>
+          
+          {element.category === "variable" && (
+            <div className="didactic-note">
+              <strong>⚠️ Cuidado en Nomenclatura:</strong> Este elemento usa sufijos (oso/ico) según el estado de oxidación con el que trabaje. Revisa bien sus valencias.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Layout({ children }) {
   const [streak, setStreak] = useState(getStudyStreak());
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("quimica-preuni-theme") === "dark");
@@ -106,6 +170,7 @@ function Home() {
   const [category, setCategory] = useState("all");
   const [tableLayer, setTableLayer] = useState("families");
   const [openTopic, setOpenTopic] = useState(null);
+  const [selectedElement, setSelectedElement] = useState(null);
   const filtered = useMemo(() => elements.filter((element) => {
     const matchesQuery = `${element.name} ${element.symbol} ${element.z}`.toLowerCase().includes(query.toLowerCase());
     return matchesQuery && (category === "all" || element.category === category);
@@ -129,10 +194,25 @@ function Home() {
         <div className="table-layers" role="group" aria-label="Capas de la tabla">{tableLayers.map((layer) => <button key={layer.id} className={tableLayer === layer.id ? "active" : ""} onClick={() => setTableLayer(layer.id)} aria-pressed={tableLayer === layer.id}>{layer.label}</button>)}</div>
         <ElementLegend />
       </div>
-      <div className={`periodic-grid layer-${tableLayer}`} aria-live="polite">{filtered.map((element) => <button key={element.z} className={`element family-${element.family.toLowerCase().replaceAll(" ", "-")}`} style={{ gridColumn: element.col, gridRow: element.row }} aria-label={`${element.name}, número atómico ${element.z}`}><small>{element.z}</small><b aria-hidden="true">{element.symbol}</b><span aria-hidden="true">{tableLayer === "families" ? element.mass : layerValue(element, tableLayer)}</span></button>)}</div>
+      <div className={`periodic-grid layer-${tableLayer}`} aria-live="polite">
+        {filtered.map((element) => (
+          <button 
+            key={element.z} 
+            className={`element family-${element.family.toLowerCase().replaceAll(" ", "-")}`} 
+            style={{ gridColumn: element.col, gridRow: element.row, cursor: 'pointer' }} 
+            onClick={() => setSelectedElement(element)}
+            aria-label={`${element.name}, número atómico ${element.z}`}
+          >
+            <small>{element.z}</small>
+            <b aria-hidden="true">{element.symbol}</b>
+            <span aria-hidden="true">{tableLayer === "families" ? element.mass : layerValue(element, tableLayer)}</span>
+          </button>
+        ))}
+      </div>
       {!filtered.length && <p className="empty-state">No encontramos elementos con esa búsqueda.</p>}
     </section>
     <section className="topics" aria-labelledby="topics-heading"><div className="section-heading"><div><h2 id="topics-heading">Chuletas por tema</h2><p>Ocho recorridos para estudiar, practicar y revisar.</p></div><span>{completedTopics}/{topics.length} completados</span></div>{topics.map((topic) => { const best = getBestScore(topic.id); const mistakes = getMistakes(topic.id); return <article className={`topic ${openTopic === topic.id ? "expanded" : ""}`} key={topic.id}><button className="topic-toggle" onClick={() => setOpenTopic(openTopic === topic.id ? null : topic.id)} aria-expanded={openTopic === topic.id}><span className="topic-number">{topic.number}</span><span><strong>{topic.title}</strong><small>{topic.tag}{best ? ` · Mejor: ${best.score}/${best.total}` : " · Sin intentar"}</small></span><ChevronDown size={17} aria-hidden="true" /></button>{openTopic === topic.id && <div className="topic-body"><div className="topic-meta"><span>{topic.level}</span><span>{topic.duration}</span></div><p>{topic.description}</p><p className="prerequisite"><strong>Antes de empezar:</strong> {topic.prerequisite}</p><div className="topic-actions"><Link className="primary-action" to={`/quiz/${topic.id}`}><ListChecks size={16} aria-hidden="true" /> Practicar este tema</Link>{mistakes.length > 0 && <Link className="secondary-action" to={`/quiz/${topic.id}?mode=mistakes`}><CheckCircle size={16} aria-hidden="true" /> Repasar {mistakes.length} error{mistakes.length === 1 ? "" : "es"}</Link>}</div></div>}</article>; })}</section>
+    <ElementModal element={selectedElement} onClose={() => setSelectedElement(null)} />
   </main>;
 }
 
