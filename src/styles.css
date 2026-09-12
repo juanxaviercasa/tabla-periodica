@@ -42,7 +42,7 @@
 [data-theme="dark"] .family-gas-noble { background: #38264a; color: #e3caf4; border-color: #a978c7; }
 [data-theme="dark"] .family-metaloide { background: #3d3a26; color: #f0e7ad; border-color: #b8a94d; }
 [data-theme="dark"] .family-metal { background: #303743; color: #d7e5f4; border-color: #7f9bb8; }
-[data-theme="dark"] .fact-text { color: #f5eef8; }
+[data-theme="dark"] .fact-text { color: #e3d8e7; }
 [data-theme="dark"] .element-legend { background: rgba(39,29,45,.8); border-color: rgba(190,231,215,.2); }
 [data-theme="dark"] .legend-labels { color: #cfc1d5; }
 * { box-sizing: border-box; }
@@ -62,7 +62,7 @@ button { cursor: pointer; } a { color: inherit; }
 /* Fact Carousel & Element Legend */
 .fact-carousel { padding: 20px 24px; border-radius: 12px; background: rgba(107, 45, 140, 0.04); border: 1px solid rgba(107, 45, 140, 0.15); margin-bottom: 16px; text-align: center; box-shadow: inset 0 2px 10px rgba(255,255,255,0.5); }
 .fact-carousel .eyebrow { display: block; margin-bottom: 8px; font-size: 11px; }
-.fact-text { font-size: 15px; color: #302636; line-height: 1.5; min-height: 46px; display: flex; align-items: center; justify-content: center; margin: 0; }
+.fact-text { font-size: 17px; font-weight: 600; font-family: Archivo, sans-serif; color: #6b2d8c; line-height: 1.4; min-height: 46px; display: flex; align-items: center; justify-content: center; margin: 0; }
 .carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
 .carousel-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(107, 45, 140, 0.2); border: none; padding: 0; transition: background 0.2s; }
 .carousel-dots .dot.active { background: #6b2d8c; }
