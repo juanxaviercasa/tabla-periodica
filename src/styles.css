@@ -65,3 +65,22 @@ button { cursor: pointer; } a { color: inherit; }
 .pathways a { min-width: 0; min-height: 132px; padding: 17px; gap: 8px; }
 @media (min-width: 641px) and (max-width: 860px) { .pathways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .learning-mode, .lab-workbench { flex-direction: column; align-items: stretch; }.learning-mode-actions, .diagnostic-actions { flex-direction: column; }.learning-mode-actions a, .diagnostic-actions a, .diagnostic-actions button { width: 100%; }.pathways, .teacher-metrics { grid-template-columns: 1fr; }.diagnostic-topic, .teacher-topic-list > div { align-items: flex-start; flex-direction: column; gap: 5px; }.lab-workbench { display: grid; grid-template-columns: 1fr; }.lab-hero h1, .teacher-hero h1, .diagnostic-hero h1 { font-size: 22px; }.atom-stage { min-height: 280px; }.atom-orbit { width: 160px; } }
+
+/* Imágenes Responsivas y Layout Visual */
+.avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(107,45,140,.2); }
+.hero-img { width: 100%; height: auto; border-radius: 8px; object-fit: cover; aspect-ratio: 16/9; margin-bottom: 16px; }
+.path-img { width: 100%; height: 110px; border-radius: 6px; object-fit: cover; margin-bottom: 12px; }
+.section-banner { width: 100%; height: auto; border-radius: 8px; object-fit: cover; margin-bottom: 16px; aspect-ratio: 16/5; }
+.certificate-img { width: 100%; height: auto; border-radius: 8px; margin-top: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.1); border: 1px solid rgba(107,45,140,.15); }
+.achievement-img { width: 80px; height: 80px; object-fit: contain; drop-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.score { align-items: center; }
+
+.lesson-gallery { display: grid; gap: 12px; margin-bottom: 20px; }
+.lesson-gallery img { width: 100%; height: auto; border-radius: 8px; object-fit: cover; aspect-ratio: 16/9; border: 1px solid rgba(107,45,140,0.15); box-shadow: 0 4px 12px rgba(55,36,63,.04); }
+
+@media (min-width: 641px) {
+  .hero, .diagnostic-hero, .lab-hero, .teacher-hero { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 24px; }
+  .hero-img { margin-bottom: 0; }
+  .lesson-gallery { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .path-img { height: 130px; }
+}
