@@ -85,6 +85,64 @@ function ElementLegend() {
   );
 }
 
+const FormatConfig = ({ configStr }) => {
+  if (!configStr) return '—';
+  const parts = configStr.split(/([spdf]\d+)/);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = part.match(/([spdf])(\d+)/);
+        if (match) {
+          return <span key={i}>{match[1]}<sup>{match[2]}</sup></span>;
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+};
+
+const Nucleus3D = ({ z, mass }) => {
+  const protons = z;
+  const neutrons = Math.round(mass) - z;
+  
+  const visualProtons = Math.min(protons, 20);
+  const visualNeutrons = Math.min(neutrons, 25);
+  
+  const particles = useMemo(() => {
+    const arr = [];
+    for(let i = 0; i < visualProtons; i++) arr.push({ type: 'p' });
+    for(let i = 0; i < visualNeutrons; i++) arr.push({ type: 'n' });
+    arr.sort(() => Math.random() - 0.5);
+    
+    return arr.map(p => {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 16;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      const zTranslate = (Math.random() - 0.5) * 24;
+      return { ...p, x, y, zTranslate };
+    });
+  }, [z, mass]);
+
+  return (
+    <div className="nucleus-3d-cluster">
+      <div className="particles-container">
+        {particles.map((p, i) => (
+          <div 
+            key={i} 
+            className={`nucleon ${p.type}`} 
+            style={{ transform: `translate3d(${p.x}px, ${p.y}px, ${p.zTranslate}px)` }} 
+          />
+        ))}
+      </div>
+      <div className="nucleus-label-overlay">
+        <span>{z}p⁺</span>
+        <span>{neutrons}n⁰</span>
+      </div>
+    </div>
+  );
+};
+
 function ElementModal({ element, onClose }) {
   if (!element) return null;
   const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
@@ -118,10 +176,7 @@ function ElementModal({ element, onClose }) {
         {/* Left Side: 3D Atom Model */}
         <div className="atom-container-3d">
           <div className="atom-3d">
-            <div className="nucleus-3d">
-              <span>{element.z}p⁺</span>
-              <span>{Math.round(element.mass) - element.z}n⁰</span>
-            </div>
+            <Nucleus3D z={element.z} mass={element.mass} />
             
             {electronsPerShell.map((numElectrons, i) => {
               const radius = (i + 1) * 45 + 50; 
@@ -146,11 +201,23 @@ function ElementModal({ element, onClose }) {
         {/* Right Side: Rich Data Panel */}
         <div className="data-panel-3d">
           <div className="element-hero">
-            <span className="hero-z">Z = {element.z}</span>
-            <h1 className="hero-symbol">{element.symbol}</h1>
-            <h2 className="hero-name">{element.name}</h2>
-            <div>
-              <span className="hero-family">{element.family}</span>
+            <div className="hero-top-row">
+              <div className="hero-text">
+                <span className="hero-z">Z = {element.z}</span>
+                <h1 className="hero-symbol">{element.symbol}</h1>
+                <h2 className="hero-name">{element.name}</h2>
+                <div>
+                  <span className="hero-family">{element.family}</span>
+                </div>
+              </div>
+              <div className="hero-image-container">
+                <img 
+                  src={`/real-elements/${element.symbol.toLowerCase()}.jpg`} 
+                  alt={`Apariencia natural de ${element.name}`} 
+                  className="element-real-image"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              </div>
             </div>
           </div>
 
@@ -161,7 +228,7 @@ function ElementModal({ element, onClose }) {
             </div>
             <div className="glass-card">
               <span className="glass-label">Config. Electrónica</span>
-              <strong className="glass-value">{element.config || '—'}</strong>
+              <strong className="glass-value"><FormatConfig configStr={element.config} /></strong>
             </div>
             <div className="glass-card">
               <span className="glass-label">Estados de Oxidación</span>

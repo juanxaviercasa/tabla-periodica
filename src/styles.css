@@ -87,8 +87,15 @@ button { cursor: pointer; } a { color: inherit; }
 .atom-3d { position: relative; transform-style: preserve-3d; transform: rotateX(60deg) rotateY(15deg); animation: atomFloat 8s ease-in-out infinite; }
 @keyframes atomFloat { 0%, 100% { transform: rotateX(60deg) rotateY(15deg) translateY(0); } 50% { transform: rotateX(60deg) rotateY(15deg) translateY(-20px); } }
 
-.nucleus-3d { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateX(-60deg) rotateY(-15deg); width: 64px; height: 64px; background: radial-gradient(circle at 30% 30%, #d870ff, #5c20a8); border-radius: 50%; box-shadow: 0 0 40px rgba(216, 112, 255, 0.6), inset 0 0 20px rgba(255,255,255,0.5); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px; z-index: 10; font-family: "IBM Plex Mono"; line-height: 1.1; }
+.nucleus-3d-cluster { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateX(-60deg) rotateY(-15deg); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; z-index: 10; }
+.particles-container { position: absolute; inset: 0; transform-style: preserve-3d; animation: spinNucleus 25s linear infinite; }
+@keyframes spinNucleus { to { transform: rotateY(360deg) rotateZ(360deg); } }
 
+.nucleon { position: absolute; top: 50%; left: 50%; width: 14px; height: 14px; border-radius: 50%; margin-top: -7px; margin-left: -7px; box-shadow: inset -3px -3px 5px rgba(0,0,0,0.6), 0 0 6px rgba(255,255,255,0.4); transform-style: preserve-3d; }
+.nucleon.p { background: radial-gradient(circle at 30% 30%, #ff4d94, #b30047); }
+.nucleon.n { background: radial-gradient(circle at 30% 30%, #4da6ff, #005ce6); }
+
+.nucleus-label-overlay { position: absolute; z-index: 20; color: white; font-weight: 700; font-size: 11px; font-family: "IBM Plex Mono"; line-height: 1.1; text-shadow: 0 1px 4px rgba(0,0,0,0.9); background: rgba(0,0,0,0.3); padding: 4px 6px; border-radius: 8px; backdrop-filter: blur(2px); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
 .orbit-3d { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1.5px dashed rgba(255, 255, 255, 0.2); border-radius: 50%; transform-style: preserve-3d; animation: orbitSpin 15s linear infinite; }
 .orbit-layer-0 { border: 1.5px solid rgba(255, 255, 255, 0.15); animation-direction: normal; animation-duration: 10s; }
 .orbit-layer-1 { animation-direction: reverse; animation-duration: 16s; transform: translate(-50%, -50%) rotateX(45deg); }
@@ -104,11 +111,16 @@ button { cursor: pointer; } a { color: inherit; }
 
 /* Rich Data Panel */
 .element-hero { display: flex; flex-direction: column; margin-bottom: 30px; }
+.hero-top-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.hero-text { display: flex; flex-direction: column; }
+.hero-image-container { width: 130px; height: 130px; flex-shrink: 0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); }
+.element-real-image { width: 100%; height: 100%; object-fit: cover; }
+
 .hero-z { font-size: 20px; color: rgba(255,255,255,0.6); font-family: "IBM Plex Mono"; font-weight: 600; margin-bottom: -10px; }
-.hero-symbol { font-size: 110px; font-weight: 900; line-height: 1.1; color: white; text-shadow: 0 0 40px rgba(255,255,255,0.4); margin: 0; }
-.hero-name { font-size: 42px; font-weight: 700; color: #e3d8e7; margin: 0 0 16px 0; font-family: Archivo; }
+.hero-symbol { font-size: 100px; font-weight: 900; line-height: 1.1; color: white; text-shadow: 0 0 40px rgba(255,255,255,0.4); margin: 0; }
+.hero-name { font-size: 38px; font-weight: 700; color: #e3d8e7; margin: 0 0 12px 0; font-family: Archivo; }
 .hero-family { display: inline-block; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-family: "IBM Plex Mono"; width: fit-content; }
-@media (max-width: 900px) { .element-hero { align-items: center; } .hero-family { margin: 0 auto; } }
+@media (max-width: 900px) { .hero-top-row { flex-direction: column; text-align: center; } .hero-family { margin: 0 auto; } }
 
 .data-grid-3d { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 500px) { .data-grid-3d { grid-template-columns: 1fr; } }
