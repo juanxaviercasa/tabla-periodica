@@ -7,8 +7,11 @@
 [data-theme="dark"] .study-guide { border-color: #8b4db0; background: rgba(39,29,45,.94); }
 [data-theme="dark"] .study-guide h2, [data-theme="dark"] .section-heading h2, [data-theme="dark"] .quiz-header h1, [data-theme="dark"] .question-card h2, [data-theme="dark"] .result h2, [data-theme="dark"] .lesson-card h2 { color: #f5eef8; }
 [data-theme="dark"] .study-guide p { color: #cfc1d5; }
-[data-theme="dark"] .hero-number, [data-theme="dark"] .streak, [data-theme="dark"] .section-heading > span, [data-theme="dark"] .back-button { color: #d4a7ef; }
+[data-theme="dark"] .hero-number, [data-theme="dark"] .streak, [data-theme="dark"] .section-heading > span, [data-theme="dark"] .back-button, [data-theme="dark"] .quiz-header > span { color: #d4a7ef; }
 [data-theme="dark"] .hero-number span, [data-theme="dark"] .hero p, [data-theme="dark"] .section-heading p, [data-theme="dark"] .quiz-header p, [data-theme="dark"] .topic-body, [data-theme="dark"] .score span { color: #c2b5c8; }
+[data-theme="dark"] .lesson-card > p { color: #d9cfe0; }
+[data-theme="dark"] .lesson-card li { color: #f0e8f3; }
+[data-theme="dark"] .lesson-card li::before { color: #a7dfca; }
 [data-theme="dark"] .search, [data-theme="dark"] .filters button, [data-theme="dark"] .secondary-action, [data-theme="dark"] .options button, [data-theme="dark"] .theme-toggle { border-color: rgba(190,231,215,.22); background: #241b2a; color: #f5eef8; }
 [data-theme="dark"] .search input, [data-theme="dark"] .options button { color: #f5eef8; }
 [data-theme="dark"] .filters button.active, [data-theme="dark"] .primary-action, [data-theme="dark"] .mobile-cta a { background: #8b4db0; border-color: #8b4db0; }
@@ -16,6 +19,7 @@
 [data-theme="dark"] .topic-toggle { color: #f5eef8; }
 [data-theme="dark"] .topic-number { border-color: #a96bd0; background: #392747; color: #e5c6f5; }
 [data-theme="dark"] .topic-toggle small, [data-theme="dark"] .empty-state, [data-theme="dark"] .review p, [data-theme="dark"] .review small { color: #bcaec2; }
+[data-theme="dark"] .review { background: #2b2132; }
 [data-theme="dark"] .topic-meta span { background: #392747; color: #d4a7ef; }
 [data-theme="dark"] .contact-cta { border-color: rgba(190,231,215,.22); background: #271d2d; color: #e3d8e7; } [data-theme="dark"] .contact-cta a { background: #8b4db0; } [data-theme="dark"] .contact-cta a:hover { background: #a96bd0; }
 [data-theme="dark"] .site-footer { color: #bcaec2; } [data-theme="dark"] .site-footer a { color: #d4a7ef; }
