@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Check, CheckCircle, X } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { topics } from "./data.js";
-import { getMistakes, saveQuizResult } from "./storage.js";
+import { getDueQuestions, saveQuizResult } from "./storage.js";
 
 function Result({ topic, questions, answers, score, onRetry, reviewMode }) {
   return <section className="result"><div className="score"><strong>{score}/{questions.length}</strong><span>{reviewMode ? "Repaso de errores" : "Tu resultado"}</span></div><h2>Revisión</h2>{questions.map((question, index) => { const correct = answers[index] === question.answer; return <article className={`review ${correct ? "correct" : "wrong"}`} key={question.id}><div><span>{correct ? <Check size={15} /> : <X size={15} />}</span><strong>{question.q}</strong></div><p>Tu respuesta: {question.options[answers[index]] ?? "Sin respuesta"}</p><p>Correcta: {question.options[question.answer]}</p><small>{question.explain}</small></article>; })}<div className="result-actions"><button className="secondary-action" onClick={onRetry}>{reviewMode ? "Repetir repaso" : "Reintentar"}</button><Link className="primary-action" to="/">Volver a los temas</Link></div></section>;
@@ -16,7 +16,7 @@ export default function QuizPage() {
   const reviewMode = searchParams.get("mode") === "mistakes";
   const questions = useMemo(() => {
     if (!topic) return [];
-    const mistakeIds = getMistakes(topic.id);
+    const mistakeIds = getDueQuestions(topic.id);
     return reviewMode && mistakeIds.length ? topic.questions.filter((question) => mistakeIds.includes(question.id)) : topic.questions;
   }, [topic, reviewMode]);
   const [started, setStarted] = useState(false);
@@ -36,7 +36,7 @@ export default function QuizPage() {
     if (index === questions.length - 1) {
       const result = next.reduce((total, answer, answerIndex) => total + (answer === questions[answerIndex].answer ? 1 : 0), 0);
       const mistakes = next.reduce((ids, answer, answerIndex) => answer === questions[answerIndex].answer ? ids : [...ids, questions[answerIndex].id], []);
-      if (!reviewMode) saveQuizResult(topic.id, result, questions.length, mistakes);
+      if (!reviewMode) saveQuizResult(topic.id, result, questions.length, mistakes, questions.map((question, questionIndex) => ({ questionId: question.id, correct: next[questionIndex] === question.answer })));
       setAnswers(next); setFinished(true);
     } else { setAnswers(next); setSelected(null); setIndex(index + 1); }
   };
