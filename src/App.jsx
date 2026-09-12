@@ -147,77 +147,123 @@ function ElementModal({ element, onClose }) {
   if (!element) return null;
   const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
   
-  const getElectronsPerShell = (z, row) => {
-    let remaining = z;
-    const maxPerShell = [2, 8, 18, 32, 32, 18, 8];
-    const shells = [];
-    for (let i = 0; i < row; i++) {
-      let max = maxPerShell[i] || 8;
-      if (i === row - 1) { 
-        shells.push(remaining);
-        break;
+  const getExactElectronsPerShell = (configStr) => {
+    if (!configStr) return [];
+    
+    const nobleGasCores = {
+      '[He]': '1s2',
+      '[Ne]': '1s2 2s2 2p6',
+      '[Ar]': '1s2 2s2 2p6 3s2 3p6',
+      '[Kr]': '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6',
+      '[Xe]': '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6',
+      '[Rn]': '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6'
+    };
+    
+    let expandedConfig = configStr;
+    Object.keys(nobleGasCores).forEach(core => {
+      if (expandedConfig.includes(core)) {
+        expandedConfig = expandedConfig.replace(core, nobleGasCores[core]);
       }
-      let e = Math.min(remaining, max);
-      shells.push(e);
-      remaining -= e;
+    });
+
+    const regex = /(\d)[spdf](\d+)/g;
+    let match;
+    const shells = {};
+    
+    while ((match = regex.exec(expandedConfig)) !== null) {
+      const level = parseInt(match[1]);
+      const electrons = parseInt(match[2]);
+      
+      if (!shells[level]) shells[level] = 0;
+      shells[level] += electrons;
     }
-    while(shells.length < row) shells.push(1);
-    return shells;
+    
+    const maxLevel = Math.max(...Object.keys(shells).map(Number), 0);
+    const result = [];
+    for (let i = 1; i <= maxLevel; i++) {
+      result.push(shells[i] || 0);
+    }
+    
+    return result;
   };
 
-  const electronsPerShell = getElectronsPerShell(element.z, element.row);
+  const electronsPerShell = useMemo(() => getExactElectronsPerShell(element.config), [element.config]);
+  const renderShells = electronsPerShell.length > 0 ? electronsPerShell : Array.from({length: element.row}).map(() => 1);
 
   return (
     <div className={`modal-overlay-3d ${familyClass}-bg`} onClick={onClose}>
-      <button className="modal-close-3d" onClick={onClose} aria-label="Cerrar"><X size={28} /></button>
+      <button className="modal-close-3d" onClick={onClose} aria-label="Cerrar"><X size={32} /></button>
       
-      <div className="modal-grid-3d" onClick={e => e.stopPropagation()}>
+      <div className="modal-split-layout" onClick={e => e.stopPropagation()}>
         
-        {/* Left Side: 3D Atom Model */}
-        <div className="atom-container-3d">
-          <div className="atom-3d">
-            <Nucleus3D z={element.z} mass={element.mass} />
+        {/* Left Side: Hero Image as Background */}
+        <div className="modal-hero-side">
+          <img 
+            src={`/real-elements/${element.symbol.toLowerCase()}.jpg`} 
+            alt={`Apariencia natural de ${element.name}`} 
+            className="hero-side-bg"
+            onError={(e) => { e.target.style.opacity = 0; }}
+          />
+          <div className="hero-side-gradient"></div>
+          
+          <div className="hero-side-content">
+            <span className="hero-z-large">Z = {element.z}</span>
+            <h1 className="hero-symbol-giant">{element.symbol}</h1>
+            <h2 className="hero-name-large">{element.name}</h2>
+            <div className="hero-family-badge">{element.family}</div>
             
-            {electronsPerShell.map((numElectrons, i) => {
-              const radius = (i + 1) * 45 + 50; 
-              return (
-                <div key={i} className={`orbit-3d orbit-layer-${i}`} style={{ width: `${radius}px`, height: `${radius}px`, animationDelay: `-${i * 1.5}s` }}>
-                  {Array.from({length: Math.min(numElectrons, 32)}).map((_, j) => {
-                    const angle = (360 / numElectrons) * j;
-                    return (
-                      <div 
-                        key={j} 
-                        className="electron-3d" 
-                        style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(${radius / 2}px)` }}
-                      />
-                    );
-                  })}
+            <div className="hero-didactic-info">
+              {element.category === "variable" && (
+                <div className="didactic-alert-hero">
+                  <strong>⚠️ Cuidado en Nomenclatura</strong>
+                  <p>Este elemento usa diferentes sufijos (oso/ico) u otros prefijos según el estado de oxidación. Revisa bien sus valencias.</p>
                 </div>
-              );
-            })}
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Right Side: Rich Data Panel */}
-        <div className="data-panel-3d">
-          <div className="element-hero">
-            <div className="hero-top-row">
-              <div className="hero-text">
-                <span className="hero-z">Z = {element.z}</span>
-                <h1 className="hero-symbol">{element.symbol}</h1>
-                <h2 className="hero-name">{element.name}</h2>
-                <div>
-                  <span className="hero-family">{element.family}</span>
-                </div>
+        {/* Right Side: Atom and Data */}
+        <div className="modal-data-side">
+          
+          <div className="atom-presentation">
+            {/* Pedagogical Labels */}
+            <div className="pedagogical-label label-nucleus">
+              <span>Núcleo Atómico</span>
+              <small>(Protones + Neutrones)</small>
+            </div>
+            
+            <div className="pedagogical-label label-cloud">
+              <span>Nube Electrónica / Zonas REEMPE</span>
+              <small>Niveles de Energía: {renderShells.length}</small>
+            </div>
+
+            <div className="atom-container-3d-large">
+              <div className="atom-3d-large">
+                <Nucleus3D z={element.z} mass={element.mass} />
+                
+                {renderShells.map((numElectrons, i) => {
+                  const radius = (i + 1) * 65 + 60; 
+                  return (
+                    <div key={i} className={`orbit-3d orbit-layer-${i}`} style={{ width: `${radius}px`, height: `${radius}px`, animationDelay: `-${i * 1.5}s` }}>
+                      {Array.from({length: numElectrons}).map((_, j) => {
+                        const angle = (360 / numElectrons) * j;
+                        return (
+                          <div 
+                            key={j} 
+                            className="electron-3d" 
+                            style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(${radius / 2}px)` }}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </div>
-              <div className="hero-image-container">
-                <img 
-                  src={`/real-elements/${element.symbol.toLowerCase()}.jpg`} 
-                  alt={`Apariencia natural de ${element.name}`} 
-                  className="element-real-image"
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
-              </div>
+            </div>
+            
+            <div className="electron-configuration-breakdown">
+               Distribución cuántica: <strong>{renderShells.join(" - ")}</strong> electrones por capa (K, L, M...)
             </div>
           </div>
 
@@ -227,7 +273,7 @@ function ElementModal({ element, onClose }) {
               <strong className="glass-value">{element.mass} u</strong>
             </div>
             <div className="glass-card">
-              <span className="glass-label">Config. Electrónica</span>
+              <span className="glass-label">Configuración Electrónica</span>
               <strong className="glass-value"><FormatConfig configStr={element.config} /></strong>
             </div>
             <div className="glass-card">
@@ -244,12 +290,6 @@ function ElementModal({ element, onClose }) {
             </div>
           </div>
           
-          {element.category === "variable" && (
-            <div className="didactic-alert-3d">
-              <strong>⚠️ Cuidado en Nomenclatura</strong>
-              <p>Este elemento usa diferentes sufijos (oso/ico) u otros prefijos según el estado de oxidación con el que trabaje. Revisa bien sus valencias antes de nombrar compuestos.</p>
-            </div>
-          )}
         </div>
       </div>
     </div>
