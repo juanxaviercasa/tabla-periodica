@@ -197,7 +197,7 @@ function ElementModal({ element, onClose }) {
       <div className="modal-split-layout" onClick={e => e.stopPropagation()}>
         
         {/* Left Side: Hero Image as Background */}
-        <div className="modal-hero-side">
+        <div className={`modal-hero-side ${familyClass}-bg`}>
           <img 
             src={`/real-elements/${element.symbol.toLowerCase()}.jpg`} 
             alt={`Apariencia natural de ${element.name}`} 

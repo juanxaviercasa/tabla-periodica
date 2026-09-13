@@ -121,6 +121,35 @@ button { cursor: pointer; } a { color: inherit; }
 .label-cloud { bottom: 40px; right: 20px; }
 .label-cloud::before { content: ''; position: absolute; top: -30px; left: -20px; width: 40px; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.5)); transform: rotate(45deg); }
 
+/* High-End 3D Atom Styles */
+.atom-container-3d-large { width: 100%; height: 350px; position: relative; perspective: 1200px; overflow: visible; }
+.atom-3d-large { position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; transform: rotateX(70deg) rotateY(15deg); animation: atomFloat 8s ease-in-out infinite; }
+@keyframes atomFloat { 0%, 100% { transform: rotateX(70deg) rotateY(15deg) translateY(0); } 50% { transform: rotateX(70deg) rotateY(15deg) translateY(-20px); } }
+
+/* Nucleus (Green & Orange Spheres) */
+.nucleus-3d-cluster { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateX(-70deg) rotateY(-15deg); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; z-index: 10; }
+.particles-container { position: absolute; inset: 0; transform-style: preserve-3d; animation: spinNucleus 25s linear infinite; }
+@keyframes spinNucleus { to { transform: rotateY(360deg) rotateZ(360deg); } }
+
+.nucleon { position: absolute; top: 50%; left: 50%; width: 18px; height: 18px; border-radius: 50%; margin-top: -9px; margin-left: -9px; box-shadow: inset -4px -4px 8px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5); transform-style: preserve-3d; }
+.nucleon.p { background: radial-gradient(circle at 30% 30%, #4aff4a, #008800); }
+.nucleon.n { background: radial-gradient(circle at 30% 30%, #ffaa00, #b35900); }
+
+/* Orbits (Thick Yellow) */
+.orbit-3d { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255, 230, 0, 0.6); box-shadow: inset 0 0 10px rgba(255, 230, 0, 0.2), 0 0 10px rgba(255, 230, 0, 0.2); border-radius: 50%; transform-style: preserve-3d; animation: orbitSpin 15s linear infinite; }
+.orbit-layer-0 { animation-direction: normal; animation-duration: 10s; }
+.orbit-layer-1 { animation-direction: reverse; animation-duration: 16s; transform: translate(-50%, -50%) rotateX(45deg); }
+.orbit-layer-2 { animation-duration: 22s; transform: translate(-50%, -50%) rotateY(60deg); }
+.orbit-layer-3 { animation-direction: reverse; animation-duration: 28s; transform: translate(-50%, -50%) rotateX(-45deg) rotateY(30deg); }
+.orbit-layer-4 { animation-duration: 35s; transform: translate(-50%, -50%) rotateX(30deg) rotateY(-60deg); }
+.orbit-layer-5 { animation-direction: reverse; animation-duration: 45s; transform: translate(-50%, -50%) rotateX(75deg); }
+.orbit-layer-6 { animation-duration: 60s; transform: translate(-50%, -50%) rotateY(75deg); }
+@keyframes orbitSpin { from { transform: translate(-50%, -50%) rotateZ(0deg); } to { transform: translate(-50%, -50%) rotateZ(360deg); } }
+
+/* Electrons (Bright Glowing Yellow) */
+.electron-3d { position: absolute; top: 50%; left: 50%; width: 14px; height: 14px; background: #fff566; border-radius: 50%; box-shadow: 0 0 20px 5px rgba(255, 230, 0, 0.9), inset 0 0 5px white; transform-style: preserve-3d; margin-top: -7px; margin-left: -7px; animation: electronCounterSpin 15s linear infinite; }
+@keyframes electronCounterSpin { from { transform: translate(-50%, -50%) rotateX(-70deg) rotateY(-15deg); } to { transform: translate(-50%, -50%) rotateX(290deg) rotateY(-15deg); } }
+
 .electron-configuration-breakdown { margin-top: auto; font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; background: rgba(255,255,255,0.05); padding: 12px 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
 .electron-configuration-breakdown strong { color: white; font-size: 16px; font-family: "IBM Plex Mono"; margin: 0 4px; }
 
