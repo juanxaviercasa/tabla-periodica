@@ -154,9 +154,6 @@ function ElementModal({ element, onClose }) {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  if (!element) return null;
-  const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
-  
   const getExactElectronsPerShell = (configStr) => {
     if (!configStr) return [];
     
@@ -197,7 +194,14 @@ function ElementModal({ element, onClose }) {
     return result;
   };
 
-  const electronsPerShell = useMemo(() => getExactElectronsPerShell(element.config), [element.config]);
+  const electronsPerShell = useMemo(() => {
+    if (!element) return [];
+    return getExactElectronsPerShell(element.config);
+  }, [element]);
+
+  if (!element) return null;
+  const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
+  
   const renderShells = electronsPerShell.length > 0 ? electronsPerShell : Array.from({length: element.row}).map(() => 1);
 
   return (
