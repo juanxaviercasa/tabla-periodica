@@ -4,7 +4,6 @@ import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Searc
 import { categories, elements, topics } from "./data.js";
 import { communityUrl } from "./config.js";
 import { getBestScore, getDiagnostic, getDueReviewCount, getDueQuestions, getMistakes, getStudyStreak } from "./storage.js";
-import Atom3D from "./components/Atom3D.jsx";
 
 const QuizPage = lazy(() => import("./QuizPage.jsx"));
 const DiagnosticPage = lazy(() => import("./DiagnosticPage.jsx"));
@@ -267,7 +266,19 @@ function ElementModal({ element, onClose }) {
             )}
 
             <div className="atom-container-3d-large" style={{ position: 'relative', width: '100%', height: '350px' }}>
-               <Atom3D z={element.z} mass={element.mass} shells={renderShells} />
+               <div className="atom-3d-large">
+                 <Nucleus3D z={element.z} mass={element.mass} />
+                 {renderShells.map((count, i) => {
+                   const orbitSize = 80 + i * 50;
+                   return (
+                     <div key={i} className={`orbit-3d orbit-layer-${i}`} style={{ width: `${orbitSize}px`, height: `${orbitSize}px` }}>
+                       {Array.from({ length: Math.min(count, 4) }).map((_, j) => (
+                         <div key={j} className="electron-3d" style={{ marginLeft: `${orbitSize / 2 - 7}px` }} />
+                       ))}
+                     </div>
+                   );
+                 })}
+               </div>
             </div>
             
             <div className="electron-configuration-breakdown">
