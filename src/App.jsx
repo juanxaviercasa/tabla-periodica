@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Search, Sun, X } from "lucide-react";
+import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Search, Sun, Target, X } from "lucide-react";
 import { categories, elements, topics } from "./data.js";
 import { communityUrl } from "./config.js";
 import { getBestScore, getDiagnostic, getDueReviewCount, getDueQuestions, getMistakes, getStudyStreak } from "./storage.js";
