@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Search, Sun, X } from "lucide-react";
 import { categories, elements, topics } from "./data.js";
-import { contactUrl } from "./config.js";
+import { communityUrl } from "./config.js";
 import { getBestScore, getDiagnostic, getDueReviewCount, getDueQuestions, getMistakes, getStudyStreak } from "./storage.js";
 import Atom3D from "./components/Atom3D.jsx";
 
@@ -315,7 +315,7 @@ function Layout({ children }) {
       <div className="header-actions"><span className="streak"><img src="/visuals/student-avatar.jpg" alt="Estudiante" className="avatar" loading="lazy" /><Flame size={16} aria-hidden="true" /> {streak} {streak === 1 ? "día" : "días"}</span><button className="theme-toggle" onClick={() => setDarkMode((current) => !current)} aria-label={darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"} title={darkMode ? "Tema claro" : "Tema oscuro"}>{darkMode ? <Sun size={17} /> : <Moon size={17} />}</button></div>
     </header>
     {children}
-    <aside className="contact-cta" aria-label="Material de química por WhatsApp"><span>¿Quieres todo el material?</span><a href={contactUrl} target="_blank" rel="noreferrer"><MessageCircle size={15} aria-hidden="true" /> WhatsApp</a></aside>
+    <aside className="contact-cta" aria-label="Únete a la comunidad"><div><strong>Quiero aprender química de verdad</strong><small style={{ display: 'block', fontSize: '10px', opacity: 0.8, marginTop: '2px' }}>Clases en vivo · simulacros · comunidad</small></div><a href={communityUrl} target="_blank" rel="noreferrer"><Target size={15} aria-hidden="true" /> Unirme a Skool</a></aside>
     <footer className="site-footer">Desarrollado por <a href="https://juan.cabellosalirrosas.com" target="_blank" rel="noreferrer">Xavier Cabello</a></footer>
   </div>;
 }

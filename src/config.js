@@ -7,4 +7,4 @@ export const appConfig = {
   }
 };
 
-export const contactUrl = `https://wa.me/${appConfig.contact.phone}?text=${encodeURIComponent(appConfig.contact.message)}`;
+export const communityUrl = "https://www.skool.com/quimica-preuni-EJEMPLO";
