@@ -4,6 +4,7 @@ import { CheckCircle, ChevronDown, Flame, ListChecks, MessageCircle, Moon, Searc
 import { categories, elements, topics } from "./data.js";
 import { contactUrl } from "./config.js";
 import { getBestScore, getDiagnostic, getDueReviewCount, getDueQuestions, getMistakes, getStudyStreak } from "./storage.js";
+import Atom3D from "./components/Atom3D.jsx";
 
 const QuizPage = lazy(() => import("./QuizPage.jsx"));
 const DiagnosticPage = lazy(() => import("./DiagnosticPage.jsx"));
@@ -144,6 +145,16 @@ const Nucleus3D = ({ z, mass }) => {
 };
 
 function ElementModal({ element, onClose }) {
+  const [showLabels, setShowLabels] = useState(false);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
   if (!element) return null;
   const familyClass = `family-${element.family.toLowerCase().replace(/ /g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`;
   
@@ -227,39 +238,36 @@ function ElementModal({ element, onClose }) {
         <div className="modal-data-side">
           
           <div className="atom-presentation">
-            {/* Pedagogical Labels */}
-            <div className="pedagogical-label label-nucleus">
-              <span>Núcleo Atómico</span>
-              <small>(Protones + Neutrones)</small>
-            </div>
             
-            <div className="pedagogical-label label-cloud">
-              <span>Nube Electrónica / Zonas REEMPE</span>
-              <small>Niveles de Energía: {renderShells.length}</small>
+            {/* Didactic Toggle Switch */}
+            <div className="didactic-toggle-container">
+              <span className="didactic-toggle-label">Ocultar Etiquetas</span>
+              <div 
+                className={`toggle-switch ${showLabels ? 'active' : ''}`}
+                onClick={(e) => { e.stopPropagation(); setShowLabels(!showLabels); }}
+              >
+                <div className="toggle-knob"></div>
+              </div>
+              <span className="didactic-toggle-label">Mostrar Etiquetas</span>
             </div>
 
-            <div className="atom-container-3d-large">
-              <div className="atom-3d-large">
-                <Nucleus3D z={element.z} mass={element.mass} />
+            {/* Pedagogical Labels (Conditional) */}
+            {showLabels && (
+              <>
+                <div className="pedagogical-label label-nucleus">
+                  <span>Núcleo Atómico</span>
+                  <small>(Protones + Neutrones)</small>
+                </div>
                 
-                {renderShells.map((numElectrons, i) => {
-                  const radius = (i + 1) * 65 + 60; 
-                  return (
-                    <div key={i} className={`orbit-3d orbit-layer-${i}`} style={{ width: `${radius}px`, height: `${radius}px`, animationDelay: `-${i * 1.5}s` }}>
-                      {Array.from({length: numElectrons}).map((_, j) => {
-                        const angle = (360 / numElectrons) * j;
-                        return (
-                          <div 
-                            key={j} 
-                            className="electron-3d" 
-                            style={{ transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(${radius / 2}px)` }}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
+                <div className="pedagogical-label label-cloud">
+                  <span>Nube Electrónica / Zonas REEMPE</span>
+                  <small>Niveles de Energía: {renderShells.length}</small>
+                </div>
+              </>
+            )}
+
+            <div className="atom-container-3d-large" style={{ position: 'relative', width: '100%', height: '350px' }}>
+               <Atom3D z={element.z} mass={element.mass} shells={renderShells} />
             </div>
             
             <div className="electron-configuration-breakdown">
