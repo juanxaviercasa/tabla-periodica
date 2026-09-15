@@ -263,3 +263,115 @@ test("validates Royal Society of Chemistry misconceptions dataset (misconception
 
   assert.equal(getMisconception("unknown-id"), null);
 });
+
+test("validates elementSpeller utility with IUPAC decomposition, phrases and metrics", async () => {
+  const { decomposeWord, getSpellerStats, spellPhrase, POPULAR_CHEM_WORDS } = await import("../src/utils/elementSpeller.js");
+
+  assert.ok(POPULAR_CHEM_WORDS.length >= 15, "Should include curated popular words");
+
+  // Single word tests
+  const genioSolutions = decomposeWord("GENIO");
+  assert.ok(genioSolutions.length >= 1, "GENIO should be spellable");
+  const firstGenio = genioSolutions[0];
+  assert.deepEqual(firstGenio.map(e => e.symbol), ["Ge", "N", "I", "O"]);
+
+  const stats = getSpellerStats(firstGenio);
+  assert.equal(stats.totalElements, 4);
+  assert.equal(stats.totalProtons, 32 + 7 + 53 + 8);
+  assert.ok(stats.totalMass > 220 && stats.totalMass < 240);
+  assert.equal(stats.preuniCount, 3); // N, I, O are in the 38 essentials
+
+  const chocolateSolutions = decomposeWord("CHOCOLATE");
+  assert.ok(chocolateSolutions.length >= 1, "CHOCOLATE should be spellable");
+
+  const peruSolutions = decomposeWord("PERU");
+  assert.ok(peruSolutions.length >= 1, "PERU should be spellable (P-Er-U)");
+  assert.deepEqual(peruSolutions[0].map(e => e.symbol), ["P", "Er", "U"]);
+
+  // Phrase spelling
+  const phrase = spellPhrase("TIERRA Y LUNA");
+  assert.equal(phrase.success, true);
+  assert.equal(phrase.words.length, 3);
+  assert.ok(phrase.words.every(w => w.spellable));
+
+  // Non-spellable test
+  const nonSpellable = decomposeWord("ZXQW");
+  assert.equal(nonSpellable.length, 0);
+});
+
+test("validates NIST successive ionization energies dataset and quantum jump calculations", async () => {
+  const { ionizationData, calculateQuantumJump, PREUNI_IONIZATION_CHALLENGES } = await import("../src/data/ionizationData.js");
+
+  // All 118 elements should have successive ionization energies
+  for (let z = 1; z <= 118; z++) {
+    const energies = ionizationData[z];
+    assert.ok(Array.isArray(energies), `Z=${z} must have an array of ionization energies`);
+    assert.ok(energies.length >= 1, `Z=${z} must have at least I1`);
+    assert.ok(energies[0] > 0, `I1 for Z=${z} must be positive`);
+    // Successive ionization energies must be strictly increasing: I_(k+1) > I_k
+    for (let i = 0; i < energies.length - 1; i++) {
+      assert.ok(energies[i + 1] > energies[i], `Ionization energies for Z=${z} must be strictly increasing`);
+    }
+  }
+
+  // Test quantum jump identification for representative elements
+  // 1. Sodium (Na, Z=11): Jump at I1 -> I2 (valence = 1, Group 1)
+  const naJump = calculateQuantumJump(ionizationData[11]);
+  assert.equal(naJump.valenceElectrons, 1);
+  assert.ok(naJump.maxRatio >= 5.0, "Na I2/I1 ratio should be > 5.0");
+  assert.equal(naJump.prediction.group, "Grupo 1 (IA)");
+  assert.equal(naJump.prediction.ion, "X⁺");
+
+  // 2. Magnesium (Mg, Z=12): Jump at I2 -> I3 (valence = 2, Group 2)
+  const mgJump = calculateQuantumJump(ionizationData[12]);
+  assert.equal(mgJump.valenceElectrons, 2);
+  assert.ok(mgJump.maxRatio >= 4.0, "Mg I3/I2 ratio should be > 4.0");
+  assert.equal(mgJump.prediction.group, "Grupo 2 (IIA)");
+  assert.equal(mgJump.prediction.ion, "X²⁺");
+
+  // 3. Aluminum (Al, Z=13): Jump at I3 -> I4 (valence = 3, Group 13)
+  const alJump = calculateQuantumJump(ionizationData[13]);
+  assert.equal(alJump.valenceElectrons, 3);
+  assert.ok(alJump.maxRatio >= 3.5, "Al I4/I3 ratio should be > 3.5");
+  assert.equal(alJump.prediction.group, "Grupo 13 (IIIA)");
+  assert.equal(alJump.prediction.ion, "X³⁺");
+
+  // 4. Silicon (Si, Z=14): Jump at I4 -> I5 (valence = 4, Group 14)
+  const siJump = calculateQuantumJump(ionizationData[14]);
+  assert.equal(siJump.valenceElectrons, 4);
+  assert.ok(siJump.maxRatio >= 3.0, "Si I5/I4 ratio should be > 3.0");
+  assert.equal(siJump.prediction.group, "Grupo 14 (IVA)");
+
+  // Pre-UNI challenges verification
+  assert.ok(PREUNI_IONIZATION_CHALLENGES.length >= 3);
+  for (const chal of PREUNI_IONIZATION_CHALLENGES) {
+    assert.ok(chal.title && chal.context && chal.question);
+    assert.equal(chal.options.length, 4);
+    assert.ok(chal.correctIdx >= 0 && chal.correctIdx < 4);
+    assert.ok(chal.rationale.length > 20);
+  }
+});
+
+test("validates enriched elements catalog with successive ionization data", async () => {
+  const { elements118 } = await import("../src/elementsData.js");
+
+  for (const elem of elements118) {
+    assert.ok(Array.isArray(elem.ionizations), `Element ${elem.symbol} must have ionizations array`);
+    assert.ok(elem.ionizations.length >= 1);
+    assert.equal(elem.ionization_1, elem.ionizations[0]);
+    assert.ok(elem.ionization_1 > 0, `I1 for ${elem.symbol} must be positive`);
+  }
+
+  // Verify that key preuni elements have multiple successive ionization energies
+  const na = elements118.find(e => e.symbol === "Na");
+  const mg = elements118.find(e => e.symbol === "Mg");
+  const al = elements118.find(e => e.symbol === "Al");
+  assert.ok(na.ionizations.length >= 4, "Na should have multiple ionization energies");
+  assert.ok(mg.ionizations.length >= 4, "Mg should have multiple ionization energies");
+  assert.ok(al.ionizations.length >= 4, "Al should have multiple ionization energies");
+  assert.equal(na.ionization_1, 495.8);
+  assert.equal(na.ionization_2, 4562.4);
+});
+
+
+

@@ -24,6 +24,8 @@ import { elements118 } from "./data.js";
 import { isotopesData } from "./data/isotopesData.js";
 import { misconceptionsData } from "./data/misconceptionsData.js";
 import { MisconceptionsGuideModal } from "./components/MisconceptionsGuideModal.jsx";
+import { AtomicBohrVisualizer } from "./components/AtomicBohrVisualizer.jsx";
+import { IonizationQuantumJumpWidget } from "./components/IonizationQuantumJumpWidget.jsx";
 
 // Pre-university admission challenge list for active inquiry
 const admissionChallenges = [
@@ -111,8 +113,22 @@ export default function LabPage() {
   const querySym = searchParams.get("sym") || searchParams.get("elemento");
   const queryTab = searchParams.get("tab");
 
-  const [activeTab, setActiveTab] = useState(queryTab === "isotopes" ? "isotopes" : "builder");
+  const initialTab =
+    queryTab === "isotopes"
+      ? "isotopes"
+      : queryTab === "jump" || queryTab === "ionizations"
+      ? "jump"
+      : "builder";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [showMisconceptionsModal, setShowMisconceptionsModal] = useState(false);
+
+  useEffect(() => {
+    const handleSwitch = (e) => {
+      if (e.detail) setActiveTab(e.detail);
+    };
+    window.addEventListener("switch-lab-tab", handleSwitch);
+    return () => window.removeEventListener("switch-lab-tab", handleSwitch);
+  }, []);
 
   // Mode 1: Atom Builder State
   const [protons, setProtons] = useState(11);
@@ -166,6 +182,8 @@ export default function LabPage() {
       setActiveTab("isotopes");
     } else if (queryTab === "builder") {
       setActiveTab("builder");
+    } else if (queryTab === "ionization") {
+      setActiveTab("ionization");
     }
 
     if (querySym) {
@@ -300,7 +318,16 @@ export default function LabPage() {
             <Scale size={18} />
             <span>2. Isótopos y Masa Ponderada</span>
           </button>
+          <button
+            type="button"
+            className={`lab-tab-pill ${activeTab === "ionization" ? "active" : ""}`}
+            onClick={() => setActiveTab("ionization")}
+          >
+            <Zap size={18} />
+            <span>3. Salto Cuántico (Ionización)</span>
+          </button>
         </div>
+
       </header>
 
       {/* =========================================================================
@@ -323,31 +350,21 @@ export default function LabPage() {
                 </span>
               </div>
 
-              {/* Graphic Atom Stage */}
-              <div className="interactive-atom-canvas">
-                {/* Visual Shells */}
-                {shellDistribution.map((count, sIdx) => {
-                  const size = 110 + sIdx * 55;
-                  return (
-                    <div
-                      key={sIdx}
-                      className={`canvas-orbital-ring ring-${sIdx + 1}`}
-                      style={{ width: `${size}px`, height: `${size}px` }}
-                    >
-                      <span className="orbital-label-tag">n={sIdx + 1} ({count}e⁻)</span>
-                    </div>
-                  );
-                })}
-
-                {/* Central Dense Nucleus */}
-                <div className="canvas-nucleus-core">
-                  <strong>{currentElement?.symbol || (protons ? `Z=${protons}` : "?")}</strong>
-                  <div className="nucleus-pills-row">
-                    <span className="p-pill">{protons} p⁺</span>
-                    <span className="n-pill">{neutrons} n⁰</span>
-                  </div>
-                </div>
+              {/* Graphic Vectorial Bohr Atom Stage */}
+              <div className="lab-bohr-stage-wrapper">
+                <AtomicBohrVisualizer
+                  protons={protons}
+                  neutrons={neutrons}
+                  electrons={electrons}
+                  shells={shellDistribution}
+                  symbol={currentElement?.symbol || (protons ? `Z=${protons}` : "?")}
+                  name={currentElement?.name || "Átomo en Laboratorio"}
+                  netCharge={netCharge}
+                  interactive={true}
+                  showControls={true}
+                />
               </div>
+
 
               {/* Nuclide Box IUPAC Notation: A Z X q */}
               <div className="nuclide-symbol-inspector">
@@ -765,7 +782,20 @@ export default function LabPage() {
         </section>
       )}
 
+      {/* =========================================================================
+          TAB 3: SALTO CUÁNTICO DE IONIZACIÓN SUCESIVA (I1, I2, I3, I4)
+          ========================================================================= */}
+      {activeTab === "ionization" && (
+        <section className="lab-mode-container ionization-mode">
+          <IonizationQuantumJumpWidget
+            element={currentElement}
+            initialMode="element"
+          />
+        </section>
+      )}
+
       {/* Royal Society of Chemistry Misconceptions Guide Modal */}
+
       <MisconceptionsGuideModal
         isOpen={showMisconceptionsModal}
         onClose={() => setShowMisconceptionsModal(false)}

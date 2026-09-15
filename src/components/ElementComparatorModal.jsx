@@ -100,7 +100,7 @@ export function ElementComparatorModal({
           {/* Dual Specimen & 3D Stage Cards */}
           <div className="comparator-cards-split">
             {/* Card A */}
-            <div className={`comparator-element-card family-${elemA.family.toLowerCase().replace(/ /g, "-")}`}>
+            <div className={`comparator-element-card family-${elemA.family.toLowerCase().replace(/ /g, "-").normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`}>
               <div className="card-top-identity">
                 <span className="card-z">Z = {elemA.z}</span>
                 <button
@@ -165,7 +165,7 @@ export function ElementComparatorModal({
 
             {/* Card B (or empty placeholder slot) */}
             {elemB ? (
-              <div className={`comparator-element-card family-${elemB.family.toLowerCase().replace(/ /g, "-")}`}>
+              <div className={`comparator-element-card family-${elemB.family.toLowerCase().replace(/ /g, "-").normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`}>
                 <div className="card-top-identity">
                   <span className="card-z">Z = {elemB.z}</span>
                   <button

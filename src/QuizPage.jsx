@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowUpRight, Check, CheckCircle, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, CheckCircle, Sparkles, X } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { topics } from "./data.js";
 import { getDueQuestions, saveQuizResult } from "./storage.js";
@@ -7,7 +7,82 @@ import { communityUrl } from "./config.js";
 
 function Result({ topic, questions, answers, score, onRetry, reviewMode }) {
   const perfectScore = score === questions.length;
-  return <section className="result"><div className="score">{perfectScore && !reviewMode && <img src="/visuals/achievement-unlocked.jpg" alt="Logro desbloqueado" className="achievement-img" loading="lazy" />}<div><strong>{score}/{questions.length}</strong><span>{reviewMode ? "Repaso de errores" : "Tu resultado"}</span></div></div>{!perfectScore && <a href={communityUrl} target="_blank" rel="noreferrer" className="quiz-mistake-cta"><strong>Sabías el dato. Te falló el ejercicio.</strong><span>Eso es lo que resolvemos en el grupo →</span></a>}<h2>Revisión</h2>{questions.map((question, index) => { const correct = answers[index] === question.answer; return <article className={`review ${correct ? "correct" : "wrong"}`} key={question.id}><div><span>{correct ? <Check size={15} /> : <X size={15} />}</span><strong>{question.q}</strong></div><p>Tu respuesta: {question.options[answers[index]] ?? "Sin respuesta"}</p><p>Correcta: {question.options[question.answer]}</p><small>{question.explain}</small></article>; })}<div className="result-actions"><button className="secondary-action" onClick={onRetry}>{reviewMode ? "Repetir repaso" : "Reintentar"}</button><Link className="primary-action" to="/">Volver a los temas</Link></div></section>;
+  return (
+    <section className="result">
+      <div className="score">
+        {perfectScore && !reviewMode && (
+          <img
+            src="/visuals/achievement-unlocked.jpg"
+            alt="Logro desbloqueado"
+            className="achievement-img"
+            loading="lazy"
+          />
+        )}
+        <div>
+          <strong>{score}/{questions.length}</strong>
+          <span>{reviewMode ? "Repaso de errores" : "Tu resultado"}</span>
+        </div>
+      </div>
+
+      {/* Reciprocity-Driven Community CTA */}
+      {!perfectScore ? (
+        <a
+          href={communityUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="quiz-mistake-cta"
+          title="Comunidad Química Zenit en Skool"
+        >
+          <div className="cta-mistake-badge">
+            <Sparkles size={13} />
+            <span>Comunidad Oficial Química Zenit</span>
+          </div>
+          <strong>Sabías el concepto, pero te falló la trampa del ejercicio.</strong>
+          <span>Eso es exactamente lo que resolvemos en vivo con bancos en Skool →</span>
+        </a>
+      ) : (
+        <a
+          href={communityUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="quiz-perfect-cta"
+          title="Comunidad de Élite Química Zenit en Skool"
+        >
+          <div className="cta-perfect-badge">
+            <Sparkles size={13} />
+            <span>¡Puntaje Perfecto! Nivel Élite UNI</span>
+          </div>
+          <strong>Dominio total demostrado en {topic.title}.</strong>
+          <span>Lleva tu preparación al siguiente nivel con simulacros avanzados en Skool →</span>
+        </a>
+      )}
+
+      <h2>Revisión</h2>
+      {questions.map((question, index) => {
+        const correct = answers[index] === question.answer;
+        return (
+          <article className={`review ${correct ? "correct" : "wrong"}`} key={question.id}>
+            <div>
+              <span>{correct ? <Check size={15} /> : <X size={15} />}</span>
+              <strong>{question.q}</strong>
+            </div>
+            <p>Tu respuesta: {question.options[answers[index]] ?? "Sin respuesta"}</p>
+            <p>Correcta: {question.options[question.answer]}</p>
+            <small>{question.explain}</small>
+          </article>
+        );
+      })}
+
+      <div className="result-actions">
+        <button className="secondary-action" onClick={onRetry}>
+          {reviewMode ? "Repetir repaso" : "Reintentar"}
+        </button>
+        <Link className="primary-action" to="/">
+          Volver a los temas
+        </Link>
+      </div>
+    </section>
+  );
 }
 
 export default function QuizPage() {

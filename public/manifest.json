@@ -1,0 +1,17 @@
+{
+  "name": "38 Elementos — La Tabla Periódica que sí cae",
+  "short_name": "38 Elementos",
+  "description": "Tabla periódica preuniversitaria interactiva para exámenes de admisión UNI y San Marcos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#191024",
+  "theme_color": "#6B2D8C",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

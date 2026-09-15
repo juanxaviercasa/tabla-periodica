@@ -1,4 +1,5 @@
 import { elementsThermalData } from "./elementsThermalData.js";
+import { ionizationData, calculateQuantumJump } from "./data/ionizationData.js";
 
 // Catálogo IUPAC Completo de los 118 Elementos Químicos con soporte didáctico preuniversitario
 // Esquema unificado que incluye: number, symbol, name, atomic_mass, shells,
@@ -4228,7 +4229,7 @@ export const elements118 = [
   }
 ];
 
-// Attach thermal and physical properties
+// Attach thermal, physical, and successive ionization properties
 for (const el of elements118) {
   const extra = elementsThermalData[el.z];
   if (extra) {
@@ -4237,6 +4238,24 @@ for (const el of elements118) {
     el.density = extra.density;
     el.electron_affinity = extra.electron_affinity;
   }
+  const ionList = ionizationData[el.z];
+  if (ionList && ionList.length > 0) {
+    el.ionizations = ionList;
+    el.ionization_energies = ionList;
+    el.ionization_1 = ionList[0];
+    el.ionization_2 = ionList[1] || null;
+    el.ionization_3 = ionList[2] || null;
+    el.ionization_4 = ionList[3] || null;
+  } else {
+    el.ionizations = [el.ionization];
+    el.ionization_energies = [el.ionization];
+    el.ionization_1 = el.ionization;
+    el.ionization_2 = null;
+    el.ionization_3 = null;
+    el.ionization_4 = null;
+  }
 }
 
+export { ionizationData, calculateQuantumJump };
 export default elements118;
+

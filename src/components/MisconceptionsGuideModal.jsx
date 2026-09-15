@@ -11,9 +11,12 @@ import {
   Eye,
   EyeOff,
   Lightbulb,
-  Award
+  Award,
+  Target,
+  ArrowUpRight
 } from "lucide-react";
 import { misconceptionsData } from "../data/misconceptionsData.js";
+import { communityUrl } from "../config.js";
 
 export function MisconceptionsGuideModal({ isOpen, onClose }) {
   const [selectedMisconceptionId, setSelectedMisconceptionId] = useState(
@@ -194,6 +197,31 @@ export function MisconceptionsGuideModal({ isOpen, onClose }) {
                 )}
               </div>
             )}
+
+            {/* Reciprocity Community Hook */}
+            <div className="modal-community-callout">
+              <div className="modal-community-callout-icon">
+                <Target size={22} />
+              </div>
+              <div className="modal-community-callout-content">
+                <div className="modal-community-callout-badge">
+                  Comunidad Oficial en Skool
+                </div>
+                <h4>¿Quieres dominar más trampas de admisión UNI y San Marcos?</h4>
+                <p>
+                  En <strong>Química Zenit</strong> resolvemos en vivo bancos oficiales de admisión, analizamos trampas fijas y compartimos estrategias de alto nivel para asegurar tu ingreso.
+                </p>
+              </div>
+              <a
+                href={communityUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="modal-community-callout-btn"
+              >
+                <span>Entrar a la Comunidad</span>
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
           </section>
         </div>
 

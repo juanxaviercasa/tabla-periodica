@@ -24,14 +24,21 @@ import {
   EyeOff,
   HelpCircle,
   Scale,
-  ShieldAlert
+  ShieldAlert,
+  Target,
+  ArrowUpRight
 } from "lucide-react";
 import { elements118, iupacFamilies } from "./data.js";
 import { getElementPedagogy } from "./data/pedagogyData.js";
 import { getElementIsotopes } from "./data/isotopesData.js";
 import { MisconceptionsGuideModal } from "./components/MisconceptionsGuideModal.jsx";
+import { AtomicBohrVisualizer } from "./components/AtomicBohrVisualizer.jsx";
+import { IonizationQuantumJumpWidget } from "./components/IonizationQuantumJumpWidget.jsx";
+import { communityUrl } from "./config.js";
+
 
 const AtomViewer3D = lazy(() => import("./components/AtomViewer3D.jsx"));
+
 
 // Shell capacity lookup: 2 * n^2 (K=2, L=8, M=18, N=32, O=50, P=72, Q=98)
 const MAX_SHELL_CAPACITY = [2, 8, 18, 32, 50, 72, 98];
@@ -79,6 +86,7 @@ export default function ElementDetailPage() {
   );
   const [revealedQuiz, setRevealedQuiz] = useState({});
   const [showMisconceptionsModal, setShowMisconceptionsModal] = useState(false);
+  const [labViewMode, setLabViewMode] = useState("bohr"); // "bohr" | "quantum3d"
 
   useEffect(() => {
     setRevealedQuiz({});
@@ -343,6 +351,18 @@ export default function ElementDetailPage() {
             </span>
           )}
 
+          {/* Study Guide Button */}
+          <button
+            type="button"
+            className="detail-guide-btn"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-study-guide"))}
+            title="Guía de Estudio: aprende cómo aprovechar al máximo esta ficha y la tabla periódica"
+            aria-label="Abrir Guía de Estudio"
+          >
+            <BookOpen size={15} />
+            <span>¿Cómo Estudiar?</span>
+          </button>
+
           {/* Share / Copy Link Button */}
           <button
             type="button"
@@ -457,15 +477,38 @@ export default function ElementDetailPage() {
             </div>
           </div>
 
-          {/* STAGE RIGHT: 3D Interactive Quantum Laboratory */}
+          {/* STAGE RIGHT: Interactive Atomic Visualizer (Bohr 2D / Quantum 3D) */}
           <div className="quantum-lab-card">
             <div className="lab-header">
               <div className="lab-title-group">
                 <span className="lab-eyebrow">
-                  <Atom size={14} /> Laboratorio Cuántico 3D
+                  <Atom size={14} /> Estructura y Dinámica Atómica
                 </span>
-                <h2 className="lab-heading">Dinámica Orbital y Estructura Atómica</h2>
+                <h2 className="lab-heading">Dinámica Orbital y Niveles Energéticos</h2>
               </div>
+
+              {/* View Mode Toggle: Bohr 2D vs Quantum 3D */}
+              <div className="detail-visualizer-toggle-group">
+                <button
+                  type="button"
+                  className={`detail-view-toggle-btn ${labViewMode === "bohr" ? "active" : ""}`}
+                  onClick={() => setLabViewMode("bohr")}
+                  title="Modelo Bohr 2D: visualización vectorial ligera con distribución orbital y regla 2n²"
+                >
+                  <Layers size={13} />
+                  <span>Modelo Bohr 2D (Ligero)</span>
+                </button>
+                <button
+                  type="button"
+                  className={`detail-view-toggle-btn ${labViewMode === "quantum3d" ? "active" : ""}`}
+                  onClick={() => setLabViewMode("quantum3d")}
+                  title="Simulador Cuántico 3D: renderizado Three.js con nube de probabilidad orbital"
+                >
+                  <Sparkles size={13} />
+                  <span>Cuántico 3D</span>
+                </button>
+              </div>
+
               <div className="lab-hud-particles">
                 <span className="particle-chip chip-protons">
                   <span className="particle-dot" /> {z} Protones (p⁺)
@@ -479,26 +522,37 @@ export default function ElementDetailPage() {
               </div>
             </div>
 
-            {/* Interactive 3D Canvas Stage */}
+            {/* Interactive Canvas Stage */}
             <div className="lab-canvas-viewport">
-              <Suspense
-                fallback={
-                  <div className="lab-loading-state">
-                    <Atom size={38} className="spin-slow" />
-                    <p>Iniciando simulador cuántico 3D...</p>
-                  </div>
-                }
-              >
-                <AtomViewer3D element={element} />
-              </Suspense>
+              {labViewMode === "bohr" ? (
+                <AtomicBohrVisualizer
+                  element={element}
+                  interactive={true}
+                  showControls={true}
+                />
+              ) : (
+                <Suspense
+                  fallback={
+                    <div className="lab-loading-state">
+                      <Atom size={38} className="spin-slow" />
+                      <p>Iniciando simulador cuántico 3D...</p>
+                    </div>
+                  }
+                >
+                  <AtomViewer3D element={element} />
+                </Suspense>
+              )}
             </div>
 
             <div className="lab-footer-note">
               <small>
-                💡 Arrastra para orbitar en 3D · Scroll/Pellizco para zoom · Cambia entre Bohr y Nube Cuántica (REEMPE)
+                {labViewMode === "bohr"
+                  ? "💡 Modelo vectorial Bohr: órbitas concéntricas cuantizadas (K, L, M..), capacidad máxima 2n² y velocidad angular diferenciada."
+                  : "💡 Arrastra para orbitar en 3D · Scroll/Pellizco para zoom · Cambia entre Bohr y Nube Cuántica (REEMPE)."}
               </small>
             </div>
           </div>
+
         </section>
 
         {/* COMPREHENSIVE ATOMIC BENTO MATRIX */}
@@ -672,8 +726,14 @@ export default function ElementDetailPage() {
             </div>
           </article>
 
+          {/* Card 5: Salto Cuántico de Energías de Ionización (I₁ → I₂ → I₃) */}
+          <article className="bento-card bento-full-width bento-jump-card span-full">
+            <IonizationQuantumJumpWidget element={element} initialMode="element" />
+          </article>
+
           {/* MÓDULO 1: APRENDE EL CONCEPTO (SIN RODEOS) - 4 TARJETAS DIDÁCTICAS */}
           <section className="bento-card bento-pedagogical-container span-full">
+
             <div className="bento-card-header pedagogical-main-header">
               <div className="pedagogical-title-group">
                 <BookOpen size={20} className="bento-icon icon-emerald" />
@@ -922,6 +982,31 @@ export default function ElementDetailPage() {
               </div>
             </section>
           )}
+        </section>
+
+        {/* Reciprocity Community Card */}
+        <section className="detail-community-card">
+          <div className="detail-comm-badge">
+            <Sparkles size={14} />
+            <span>Comunidad Oficial Química Zenit</span>
+          </div>
+          <div className="detail-comm-content">
+            <h3>¿Dudas con este elemento en problemas tipo examen?</h3>
+            <p>
+              No te quedes atascado. En nuestra comunidad de <strong>Skool</strong> resolvemos bancos de preguntas, simulacros semanales y ejercicios complejos de admisión junto a profesores y postulantes a la UNI y San Marcos.
+            </p>
+            <a
+              href={communityUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="detail-comm-btn"
+              title="Unirme a la comunidad Química Zenit en Skool"
+            >
+              <Target size={16} />
+              <span>Unirme a Química Zenit en Skool</span>
+              <ArrowUpRight size={15} />
+            </a>
+          </div>
         </section>
 
         {/* Footer Navigation Bar */}

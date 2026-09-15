@@ -4,3 +4,5 @@ dist/
 *.log
 .env
 .env.*
+.env.local
+.deploy_report.json

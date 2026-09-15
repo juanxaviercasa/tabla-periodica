@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, CheckCircle, RotateCcw } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CheckCircle, RotateCcw, Sparkles, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 import { topics } from "./data.js";
 import { getDiagnostic, saveDiagnostic } from "./storage.js";
+import { communityUrl } from "./config.js";
 
 const diagnosticTopics = topics.slice(0, 6);
 
@@ -53,7 +54,45 @@ export default function DiagnosticPage() {
     return <main className="diagnostic-page">
       <div className="diagnostic-hero"><img src="/visuals/diagnostic-compass.jpg" alt="" className="hero-img" loading="lazy" /><div className="hero-content"><span className="eyebrow">Tu punto de partida</span><h1>Ya sabemos por dónde empezar.</h1><p>El diagnóstico no es una nota: es un mapa para que estudies con menos fricción y mejores repasos.</p></div></div>
       <section className="diagnostic-result"><div className="diagnostic-score"><strong>{result.score}/{result.total}</strong><span>conceptos reconocidos</span></div><h2>Te recomendamos {recommendedMode}.</h2><p>{result.score < 3 ? "Conviene reforzar los modelos básicos antes de acelerar hacia el examen." : "Ya tienes una base funcional. Puedes practicar con foco y volver a profundizar cuando aparezca un error."}</p><div className="diagnostic-actions"><Link className="primary-action" to={`/quiz/${recommendedTopic.id}`}><ArrowRight size={16} /> Empezar por {recommendedTopic.title}</Link><button className="secondary-action" onClick={restart}><RotateCcw size={16} /> Repetir diagnóstico</button></div></section>
-      <section className="diagnostic-breakdown"><h2>Mapa de competencias</h2>{questions.map((item) => <div className="diagnostic-topic" key={item.topicId}><span>{item.topicTitle}</span><strong className={result.topicScores[item.topicId] ? "known" : "needs-review"}>{result.topicScores[item.topicId] ? "Base detectada" : "Para repasar"}</strong></div>)}</section>
+      <section className="diagnostic-breakdown">
+        <h2>Mapa de competencias</h2>
+        {questions.map((item) => (
+          <div className="diagnostic-topic" key={item.topicId}>
+            <span>{item.topicTitle}</span>
+            <strong className={result.topicScores[item.topicId] ? "known" : "needs-review"}>
+              {result.topicScores[item.topicId] ? "Base detectada" : "Para repasar"}
+            </strong>
+          </div>
+        ))}
+      </section>
+
+      {/* Reciprocity-Driven Community CTA */}
+      <section className="diagnostic-community-card">
+        <div className="diag-cta-top">
+          <div className="diag-cta-badge">
+            <Sparkles size={14} />
+            <span>Comunidad Oficial Química Zenit</span>
+          </div>
+          <span className="diag-cta-free-tag">Acompañamiento Intensivo</span>
+        </div>
+        <div className="diag-cta-content">
+          <h3>¿Quieres nivelar tus temas pendientes antes del examen?</h3>
+          <p>
+            No te quedes estudiando solo. En nuestra comunidad de <strong>Skool</strong> resolvemos en vivo los ejercicios de banco de los temas que te tocaron repasar, con solucionarios paso a paso y simulacros semanales tipo UNI y San Marcos.
+          </p>
+          <a
+            href={communityUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="diag-cta-btn"
+            title="Acceder a la comunidad Química Zenit en Skool"
+          >
+            <Target size={16} />
+            <span>Unirme a Química Zenit en Skool</span>
+            <ArrowUpRight size={16} />
+          </a>
+        </div>
+      </section>
     </main>;
   }
 

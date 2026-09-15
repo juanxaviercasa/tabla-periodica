@@ -1,28 +1,43 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Link, Route, Routes } from "react-router-dom";
+import { Component, lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Activity,
+  AlertTriangle,
   Atom,
+  BookOpen,
   Check,
   CheckCircle,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Columns3,
   Compass,
+  Download,
+  Eye,
+  FileText,
   Filter,
   Flame,
   Layers,
+  Lightbulb,
   ListChecks,
   Moon,
+  Pause,
+  Play,
   Plus,
+  QrCode,
   RotateCcw,
   Scale,
   Search,
   ShieldAlert,
+  Shuffle,
   Sparkles,
   Sun,
   Target,
+  ArrowUpRight,
   Thermometer,
-  X
+  X,
+  ZoomIn,
+  MessageCircle
 } from "lucide-react";
 import {
   categories,
@@ -57,7 +72,10 @@ import {
 } from "./components/TemperatureSlider.jsx";
 import { ElementComparatorModal } from "./components/ElementComparatorModal.jsx";
 import { MisconceptionsGuideModal } from "./components/MisconceptionsGuideModal.jsx";
-import { communityUrl } from "./config.js";
+import { ElementSpellerModal } from "./components/ElementSpellerModal.jsx";
+import { StudyGuideModal } from "./components/StudyGuideModal.jsx";
+import { LaminasViewerModal } from "./components/LaminasViewerModal.jsx";
+import { communityUrl, whatsappCommunityUrl } from "./config.js";
 import {
   getBestScore,
   getDiagnostic,
@@ -155,49 +173,307 @@ const examTrapDefinitions = {
 };
 
 const chemistryFacts = [
-  "El Francio es tan escaso que se estima que solo hay entre 20 a 30 gramos en toda la Tierra en cualquier momento.",
-  "El Mercurio y el Bromo son los únicos elementos de la tabla que son líquidos a temperatura ambiente.",
-  "El Carbono es la base de toda la vida conocida y puede formar más compuestos que todos los demás elementos combinados.",
-  "El Titanio es tan fuerte como el acero pero 45% más ligero, y es casi completamente inmune a la corrosión.",
-  "El Osmio es la sustancia natural más densa de la Tierra: un litro pesa más de 22.5 kilogramos.",
-  "El Helio fue descubierto en el Sol mediante espectroscopía antes de ser hallado en la Tierra."
+  {
+    id: "francio",
+    tag: "Rareza Natural",
+    category: "Metales Alcalinos",
+    elements: ["Fr"],
+    title: "El elemento natural más escaso de la Tierra",
+    text: "El Francio (Fr, Z=87) es tan inestable que se calcula que en toda la corteza terrestre solo existen entre 20 y 30 gramos en cualquier momento.",
+    examTip: "En exámenes nunca te pedirán reacciones químicas del Francio: todos sus isótopos son intensamente radiactivos (el ²²³Fr tiene una vida media de apenas 22 minutos)."
+  },
+  {
+    id: "liquidos",
+    tag: "Fases a 25 °C",
+    category: "Estados de Agregación",
+    elements: ["Hg", "Br"],
+    title: "Los únicos 2 elementos líquidos a temperatura ambiente",
+    text: "En toda la tabla de 118 elementos, a 25 °C y 1 atm solo existen dos líquidos: el Mercurio (Hg, metal) y el Bromo (Br, no metal).",
+    examTip: "Pregunta trampa recurrente: el Galio (Ga, 29.7 °C) y el Cesio (Cs, 28.5 °C) son sólidos a 25 °C estándar, aunque funden fácilmente con el calor de la mano."
+  },
+  {
+    id: "wolframio",
+    tag: "Punto de Fusión",
+    category: "Metales de Transición",
+    elements: ["W"],
+    title: "El metal con mayor punto de fusión de la tabla",
+    text: "El Wolframio o Tungsteno (W, Z=74) resiste hasta los 3422 °C antes de fundirse. Por eso fue la base de los filamentos de lámparas incandescentes durante más de un siglo.",
+    examTip: "Su símbolo W proviene de su nombre mineralógico alemán 'Wolfram'. Pertenece al grupo 6 (VIB) y período 6."
+  },
+  {
+    id: "densidad",
+    tag: "Densidad Extrema",
+    category: "Metales de Transición",
+    elements: ["Os", "Ir"],
+    title: "Las dos sustancias naturales más densas del planeta",
+    text: "El Osmio (Os, 22.59 g/cm³) y el Iridio (Ir, 22.56 g/cm³) duplican la densidad del plomo. Una simple botella de 1 litro llena de Osmio pesaría más de 22.5 kilogramos.",
+    examTip: "En la tabla periódica, la densidad máxima se sitúa en el bloque d inferior central (período 6, metales de transición pesados)."
+  },
+  {
+    id: "helio",
+    tag: "Astronomía",
+    category: "Gases Nobles",
+    elements: ["He"],
+    title: "Descubierto en el Sol antes que en la propia Tierra",
+    text: "El Helio (He, Z=2) fue detectado en 1868 como una línea espectral amarilla en la corona solar durante un eclipse en la India, 27 años antes de ser aislado en un laboratorio terrestre.",
+    examTip: "Su nombre proviene de 'Helios' (dios griego del Sol). Es el segundo elemento más abundante del universo observable después del Hidrógeno."
+  },
+  {
+    id: "fluor",
+    tag: "Electronegatividad",
+    category: "Halógenos",
+    elements: ["F"],
+    title: "El elemento más electronegativo y voraz",
+    text: "El Flúor (F, Z=9) encabeza la escala de Pauling con 3.98 de electronegatividad. Es tan ávido de electrones que reacciona violentamente con agua, vidrio y metales nobles.",
+    examTip: "Tendencia periódica de oro: la electronegatividad aumenta hacia la derecha en un período y hacia arriba en un grupo, alcanzando su ápice en el Flúor."
+  },
+  {
+    id: "antiserrucho",
+    tag: "Trampa UNI Clásica",
+    category: "Configuración Electrónica",
+    elements: ["Cr", "Cu"],
+    title: "Las anomalías d⁴ y d⁹ (Regla del Antiserrucho)",
+    text: "El Cromo (Cr, Z=24) y el Cobre (Cu, Z=29) rompen la regla de Aufbau estándar: terminan en 4s¹ 3d⁵ y 4s¹ 3d¹⁰ para lograr orbitales semillenos o llenos de menor energía.",
+    examTip: "¡Trampa fija en UNI y San Marcos! Escribir 4s² 3d⁴ para el Cr o 4s² 3d⁹ para el Cu te anula el problema de configuración electrónica."
+  },
+  {
+    id: "carbono",
+    tag: "Alotropía",
+    category: "Carbonoides",
+    elements: ["C"],
+    title: "Del grafito blando al diamante indestructible",
+    text: "El Carbono (C) posee la alotropía más espectacular: en grafito forma láminas hexagonales conductoras y lubricantes (sp²); en diamante forma una red tetraédrica hiperdura y aislante (sp³).",
+    examTip: "Alótropos clásicos de examen: Carbono (grafito/diamante), Oxígeno (O₂/O₃), Fósforo (blanco/rojo) y Azufre (rómbico/monoclínico)."
+  },
+  {
+    id: "galio",
+    tag: "Predicción Mendeléyev",
+    category: "Metales Térreos",
+    elements: ["Ga"],
+    title: "El elemento predicho con exactitud matemática",
+    text: "Dmitri Mendeléyev predijo en 1869 las propiedades exactas del 'Eka-aluminio': masa atómica ~68, densidad 5.9 g/cm³ y bajo punto de fusión. En 1875 se descubrió el Galio confirmándolo.",
+    examTip: "Mendeléyev dejó casilleros vacíos para elementos desconocidos (Eka-boro = Escandio, Eka-aluminio = Galio, Eka-silicio = Germanio), consolidando su ley periódica."
+  },
+  {
+    id: "oro",
+    tag: "Maleabilidad Extrema",
+    category: "Metales Nobles",
+    elements: ["Au"],
+    title: "Un solo gramo cubre un metro cuadrado",
+    text: "El Oro (Au, Z=79) es el metal más maleable que existe. Con apenas 1 gramo se puede laminar una hoja semitransparente de 1 m² con unos 200 átomos de grosor.",
+    examTip: "El oro no reacciona con ácidos simples (HCl, HNO₃ por separado). Solo se disuelve en agua regia (mezcla 3:1 de HCl y HNO₃ concentrados)."
+  },
+  {
+    id: "astato",
+    tag: "Radioisótopos",
+    category: "Halógenos",
+    elements: ["At"],
+    title: "Menos de 1 gramo en toda la corteza terrestre",
+    text: "El Ástato (At, Z=85) es el segundo elemento natural más escaso del planeta. Su desintegración radiactiva es tan veloz que nunca se ha visto a simple vista una masa macroscópica.",
+    examTip: "Pertenece al grupo 17 (VIIA). Aunque se clasifica como halógeno, sus propiedades físicas evidencian un marcado carácter metálico por efecto relativista."
+  },
+  {
+    id: "hidrogeno",
+    tag: "El Huérfano de la Tabla",
+    category: "No Metales",
+    elements: ["H"],
+    title: "El 75% de la masa de todo el Cosmos",
+    text: "El Hidrógeno (H) constituye tres cuartas partes de la materia ordinaria del universo. Aunque se dibuja sobre el grupo 1 por tener 1s¹, no es un metal alcalino sino un gas diatómico (H₂).",
+    examTip: "Pregunta teórica frecuente: el Hidrógeno NO forma parte de la familia de los metales alcalinos; carece de grupo químico idéntico al resto."
+  }
 ];
 
 function FactCarousel() {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [showExamTip, setShowExamTip] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
 
+  const currentFact = chemistryFacts[currentIndex] || chemistryFacts[0];
+
+  // Auto-advance every 9 seconds, pauses when user requests
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % chemistryFacts.length);
-    }, 12000);
+      setShowExamTip(false);
+    }, 9000);
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, currentIndex]);
+
+  const handlePrev = (e) => {
+    e?.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + chemistryFacts.length) % chemistryFacts.length);
+    setShowExamTip(false);
+  };
+
+  const handleNext = (e) => {
+    e?.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % chemistryFacts.length);
+    setShowExamTip(false);
+  };
+
+  const handleShuffle = (e) => {
+    e?.stopPropagation();
+    let nextIdx = Math.floor(Math.random() * chemistryFacts.length);
+    if (nextIdx === currentIndex) {
+      nextIdx = (currentIndex + 1) % chemistryFacts.length;
+    }
+    setCurrentIndex(nextIdx);
+    setShowExamTip(false);
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStart === null) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStart - touchEnd;
+    if (diff > 45) {
+      handleNext();
+    } else if (diff < -45) {
+      handlePrev();
+    }
+    setTouchStart(null);
+  };
 
   return (
     <div
-      className="fact-carousel"
-      aria-label="Datos curiosos sobre química"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onClick={() => setIsPaused(true)}
+      className={`fact-carousel ${isPaused ? "is-paused" : ""}`}
+      aria-label="Datos curiosos sobre química y tips de examen"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
-      <span className="eyebrow">💡 ¿Sabías que...?</span>
-      <p className="fact-text" key={currentIndex}>{chemistryFacts[currentIndex]}</p>
-      <div className="carousel-dots">
-        {chemistryFacts.map((_, idx) => (
+      {/* Top Header Row with Eyebrow, Category Tag & Playback Controls */}
+      <div className="fact-carousel-header">
+        <div className="fact-header-left">
+          <span className="fact-eyebrow">
+            <Lightbulb size={15} className="text-amber" aria-hidden="true" />
+            <span>¿Sabías que...?</span>
+          </span>
+          <span className="fact-tag-badge">{currentFact.tag}</span>
+        </div>
+
+        {/* Carousel Control Bar */}
+        <div className="fact-controls" role="toolbar" aria-label="Controles del carrusel">
           <button
-            key={idx}
-            className={`dot ${idx === currentIndex ? "active" : ""}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentIndex(idx);
-              setIsPaused(true);
-            }}
-            aria-label={`Ver dato ${idx + 1}`}
-          />
-        ))}
+            type="button"
+            className="fact-ctrl-btn"
+            onClick={handlePrev}
+            aria-label="Dato anterior"
+            title="Dato anterior"
+          >
+            <ChevronLeft size={16} />
+          </button>
+
+          <button
+            type="button"
+            className={`fact-ctrl-btn ${isPaused ? "active-pause" : ""}`}
+            onClick={() => setIsPaused(!isPaused)}
+            aria-label={isPaused ? "Reanudar rotación automática" : "Pausar rotación"}
+            title={isPaused ? "Reanudar rotación automática" : "Pausar rotación"}
+          >
+            {isPaused ? <Play size={14} /> : <Pause size={14} />}
+          </button>
+
+          <button
+            type="button"
+            className="fact-ctrl-btn"
+            onClick={handleNext}
+            aria-label="Siguiente dato"
+            title="Siguiente dato"
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          <button
+            type="button"
+            className="fact-ctrl-btn shuffle-btn"
+            onClick={handleShuffle}
+            aria-label="Dato aleatorio"
+            title="Dato al azar"
+          >
+            <Shuffle size={13} />
+          </button>
+        </div>
+      </div>
+
+      {/* Main Fact Card */}
+      <div className="fact-carousel-body" key={currentFact.id}>
+        <h3 className="fact-title">{currentFact.title}</h3>
+        <p className="fact-text">{currentFact.text}</p>
+
+        {/* Elements Group & Exam Tip Toggle */}
+        <div className="fact-footer-row">
+          {currentFact.elements && currentFact.elements.length > 0 && (
+            <div className="fact-elements-group">
+              <span className="fact-elements-label">Explorar elemento:</span>
+              {currentFact.elements.map((sym) => {
+                const elData = elements.find((e) => e.symbol === sym);
+                return (
+                  <button
+                    key={sym}
+                    type="button"
+                    className="fact-element-chip"
+                    onClick={() => navigate(`/elemento/${sym.toLowerCase()}`)}
+                    title={`Ver ficha completa de ${elData?.name || sym} (Z=${elData?.z || "?"})`}
+                  >
+                    <strong>{sym}</strong>
+                    <span>{elData?.name || sym}</span>
+                    <ArrowUpRight size={12} />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {currentFact.examTip && (
+            <button
+              type="button"
+              className={`fact-tip-toggle ${showExamTip ? "expanded" : ""}`}
+              onClick={() => setShowExamTip(!showExamTip)}
+              aria-expanded={showExamTip}
+            >
+              <Sparkles size={13} />
+              <span>{showExamTip ? "Ocultar tip admisión" : "¿Cómo cae en el examen?"}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Revealed Admission Tip Box */}
+        {showExamTip && currentFact.examTip && (
+          <div className="fact-exam-tip-revealed">
+            <strong>Clave Pre-UNI / San Marcos:</strong>
+            <p>{currentFact.examTip}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Navigation Indicators & Status */}
+      <div className="fact-carousel-bottom">
+        <div className="carousel-dots" role="tablist" aria-label="Indicadores de datos curiosos">
+          {chemistryFacts.map((fact, idx) => (
+            <button
+              key={fact.id}
+              type="button"
+              className={`dot ${idx === currentIndex ? "active" : ""}`}
+              onClick={() => {
+                setCurrentIndex(idx);
+                setShowExamTip(false);
+              }}
+              aria-label={`Ver dato ${idx + 1}: ${fact.title}`}
+              title={fact.title}
+            />
+          ))}
+        </div>
+
+        <div className="fact-counter">
+          <span>{currentIndex + 1} de {chemistryFacts.length}</span>
+          {isPaused && <span className="fact-paused-indicator">· Pausado</span>}
+        </div>
       </div>
     </div>
   );
@@ -515,10 +791,29 @@ function ElementModal({ element, onClose }) {
 }
 
 function Layout({ children }) {
+  const navigate = useNavigate();
   const [streak, setStreak] = useState(getStudyStreak());
   const [darkMode, setDarkMode] = useState(
     () => localStorage.getItem("quimica-preuni-theme") === "dark"
   );
+  const [showSpellerModal, setShowSpellerModal] = useState(false);
+  const [showLaminasModal, setShowLaminasModal] = useState(false);
+  const [selectedLaminaId, setSelectedLaminaId] = useState("completa");
+
+  useEffect(() => {
+    const handleOpenSpeller = () => setShowSpellerModal(true);
+    window.addEventListener("open-speller-modal", handleOpenSpeller);
+    return () => window.removeEventListener("open-speller-modal", handleOpenSpeller);
+  }, []);
+
+  useEffect(() => {
+    const handleOpenLaminas = (e) => {
+      if (e?.detail?.laminaId) setSelectedLaminaId(e.detail.laminaId);
+      setShowLaminasModal(true);
+    };
+    window.addEventListener("open-laminas", handleOpenLaminas);
+    return () => window.removeEventListener("open-laminas", handleOpenLaminas);
+  }, []);
 
   useEffect(() => {
     const update = () => setStreak(getStudyStreak());
@@ -533,6 +828,31 @@ function Layout({ children }) {
 
   return (
     <div className="app-shell">
+      {/* Top Authority Bar: Química Zenit en Skool */}
+      <div className="top-authority-bar">
+        <div className="top-authority-inner">
+          <div className="top-authority-left">
+            <span className="top-authority-badge">
+              <span className="live-dot" aria-hidden="true" />
+              <span>Química Zenit</span>
+            </span>
+            <span className="top-authority-text">
+              Comunidad oficial de preparación intensiva para la UNI y San Marcos
+            </span>
+          </div>
+          <a
+            href={communityUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="top-authority-link"
+            title="Conocer la comunidad de aprendizaje Química Zenit en Skool"
+          >
+            <span>Conocer Comunidad</span>
+            <ArrowUpRight size={13} aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+
       <header className="site-header">
         <Link className="brand" to="/" aria-label="38 Elementos, inicio">
           <img
@@ -541,6 +861,47 @@ function Layout({ children }) {
           />
         </Link>
         <div className="header-actions">
+          {/* Downloadable Laminas Button (Smooth Scroll to Bottom Section) */}
+          <button
+            type="button"
+            className="laminas-nav-btn"
+            onClick={() => {
+              const el = document.getElementById("laminas-descarga");
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" });
+                el.classList.add("laminas-pulse-glow");
+                setTimeout(() => el.classList.remove("laminas-pulse-glow"), 2200);
+              } else {
+                setSelectedLaminaId("completa");
+                setShowLaminasModal(true);
+              }
+            }}
+            aria-label="Ir a descargar Láminas de Estudio Gratis"
+            title="Ir a la sección de láminas didácticas para descargar en PDF e Imagen HD"
+          >
+            <span className="nav-gift-emoji">📥</span>
+            <span className="nav-gift-text">Láminas Gratis ↓</span>
+          </button>
+          <button
+            type="button"
+            className="guide-nav-btn"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-study-guide"))}
+            aria-label="Abrir Guía de Estudio"
+            title="Guía de Estudio: ¿cómo estudiar la tabla periódica y aprovechar la app al 100%?"
+          >
+            <BookOpen size={14} />
+            <span>¿Cómo Estudiar?</span>
+          </button>
+          <button
+            type="button"
+            className="speller-nav-btn"
+            onClick={() => setShowSpellerModal(true)}
+            aria-label="Abrir Deletreo Químico"
+            title="Deletreo Químico: convierte cualquier palabra en elementos de la tabla periódica"
+          >
+            <span className="speller-btn-emoji">🔤</span>
+            <span className="speller-btn-text">Deletreo Químico</span>
+          </button>
           <span className="streak">
             <img
               src="/visuals/student-avatar.jpg"
@@ -561,16 +922,38 @@ function Layout({ children }) {
         </div>
       </header>
       {children}
-      <aside className="contact-cta" aria-label="Únete a la comunidad">
-        <div>
-          <strong>Quiero aprender química de verdad</strong>
-          <small style={{ display: "block", fontSize: "10px", opacity: 0.8, marginTop: "2px" }}>
-            Clases en vivo · simulacros · comunidad
-          </small>
+      <aside className="contact-cta" aria-label="Únete a la comunidad de Química Zenit">
+        <div className="contact-cta-left">
+          <div className="contact-cta-badge">
+            <span className="live-dot" aria-hidden="true" />
+            <span>Comunidad Oficial en Skool</span>
+          </div>
+          <strong className="contact-cta-title">¿Postulas a la UNI o San Marcos?</strong>
+          <p className="contact-cta-desc">
+            Únete a la comunidad de aprendizaje de Química Zenit: clases intensivas, bancos de admisión oficiales resueltos paso a paso y simulacros semanales.
+          </p>
         </div>
-        <a href={communityUrl} target="_blank" rel="noreferrer">
-          <Target size={15} aria-hidden="true" /> Unirme a Skool
-        </a>
+        <div className="contact-cta-actions">
+          <button
+            type="button"
+            className="contact-cta-qr-btn"
+            onClick={() => setShowLaminasModal(true)}
+            title="Ver código QR para escanear con tu celular"
+          >
+            <QrCode size={15} />
+            <span>Ver QR</span>
+          </button>
+          <a
+            href={communityUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="contact-cta-button"
+            title="Acceder a la comunidad oficial Química Zenit en Skool"
+          >
+            <span>Acceder a Skool</span>
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+        </div>
       </aside>
       <footer className="site-footer">
         Desarrollado por{" "}
@@ -578,9 +961,173 @@ function Layout({ children }) {
           Xavier Cabello
         </a>
       </footer>
+
+      {/* Deletreo Químico (Word Speller) Modal */}
+      <ElementSpellerModal
+        isOpen={showSpellerModal}
+        onClose={() => setShowSpellerModal(false)}
+        onSelectElement={(el) => navigate(`/elemento/${el.symbol.toLowerCase()}`)}
+      />
+
+      {/* Visor Oficial de Láminas de Estudio en PDF */}
+      <LaminasViewerModal
+        isOpen={showLaminasModal}
+        onClose={() => setShowLaminasModal(false)}
+        initialLaminaId={selectedLaminaId}
+      />
     </div>
   );
 }
+
+function LaminasStudySection() {
+  const openLaminas = (laminaId = "completa") => {
+    window.dispatchEvent(new CustomEvent("open-laminas", { detail: { laminaId } }));
+  };
+
+  const LAMINAS_ITEMS = [
+    {
+      id: "completa",
+      badge: "Lámina 1",
+      title: "Tabla Periódica Completa",
+      desc: "Didáctica oficial IUPAC con los 118 elementos organizados por períodos, grupos y masas atómicas.",
+      previewImg: "/laminas/tabla-periodica-completa.png",
+      pdfUrl: "/laminas/tabla-periodica-completa.pdf",
+      pdfName: "Tabla_Periodica_Completa_QuimicaZenit.pdf",
+      pdfSize: "218 KB",
+      imageUrl: "/laminas/tabla-periodica-completa.png",
+      imageName: "Tabla_Periodica_Completa_HD_QuimicaZenit.png",
+      imageSize: "390 KB"
+    },
+    {
+      id: "con-imagenes",
+      badge: "Lámina 2",
+      title: "Tabla con Imágenes Reales",
+      desc: "Fotografías reales de los elementos en su estado natural para máxima fijación visual y nemotécnia.",
+      previewImg: "/laminas/tabla-periodica-con-imagenes.png",
+      pdfUrl: "/laminas/tabla-periodica-con-imagenes.pdf",
+      pdfName: "Tabla_Periodica_con_Imagenes_QuimicaZenit.pdf",
+      pdfSize: "614 KB",
+      imageUrl: "/laminas/tabla-periodica-con-imagenes.png",
+      imageName: "Tabla_Periodica_con_Imagenes_HD_QuimicaZenit.png",
+      imageSize: "820 KB"
+    }
+  ];
+
+  return (
+    <section className="laminas-showcase-section" id="laminas-descarga" aria-label="Láminas didácticas de la tabla periódica">
+      <div className="laminas-showcase-header">
+        <div className="laminas-showcase-badge">
+          <Sparkles size={13} className="text-amber" aria-hidden="true" />
+          <span>Material Gratuito Descargable</span>
+        </div>
+        <h2 className="laminas-showcase-title">
+          Láminas de la Tabla Periódica en Alta Resolución
+        </h2>
+        <p className="laminas-showcase-sub">
+          Descarga en <strong>PDF vectorial (para imprimir sin pixelar)</strong> o en <strong>Imagen HD (para tu celular o tablet)</strong>. Ambas láminas en formato horizontal.
+        </p>
+      </div>
+
+      <div className="laminas-cards-grid">
+        {LAMINAS_ITEMS.map((item) => (
+          <article key={item.id} className="lamina-showcase-card">
+            {/* Visual Thumbnail (100% visible, never cropped) */}
+            <div
+              className="lamina-showcase-thumb-wrap"
+              onClick={() => openLaminas(item.id)}
+              title="Clic para abrir visor en pantalla completa con zoom"
+            >
+              <img
+                src={item.previewImg}
+                alt={item.title}
+                className="lamina-showcase-img"
+                loading="lazy"
+              />
+              <div className="lamina-thumb-overlay">
+                <span className="lamina-zoom-tag">
+                  <ZoomIn size={14} /> Ver con zoom
+                </span>
+              </div>
+              <span className="lamina-orientation-tag">Horizontal (A4 / A3)</span>
+            </div>
+
+            {/* Content & Clean Download Toolbar */}
+            <div className="lamina-showcase-info">
+              <div className="lamina-badge-row">
+                <span className="lamina-card-pill">{item.badge}</span>
+                <span className="lamina-format-hint">PDF &amp; Imagen PNG</span>
+              </div>
+              <h3 className="lamina-item-title">{item.title}</h3>
+              <p className="lamina-item-desc">{item.desc}</p>
+
+              {/* Orderly Action Buttons: PDF, Imagen HD, and Explorar */}
+              <div className="lamina-item-actions">
+                <a
+                  href={item.pdfUrl}
+                  download={item.pdfName}
+                  className="lamina-action-btn pdf"
+                  title={`Descargar ${item.title} en PDF vectorial para imprimir`}
+                >
+                  <FileText size={15} />
+                  <span>PDF ({item.pdfSize})</span>
+                </a>
+
+                <a
+                  href={item.imageUrl}
+                  download={item.imageName}
+                  className="lamina-action-btn image"
+                  title={`Descargar ${item.title} en imagen PNG alta resolución`}
+                >
+                  <Download size={15} />
+                  <span>Imagen HD</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => openLaminas(item.id)}
+                  className="lamina-action-btn view"
+                  title="Abrir visor interactivo con zoom"
+                  aria-label={`Ver ${item.title} con zoom`}
+                >
+                  <Eye size={15} />
+                  <span>Explorar</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {/* WhatsApp Free Admission Classes Funnel Card */}
+      <div className="laminas-whatsapp-card">
+        <div className="whatsapp-card-content">
+          <div className="whatsapp-card-badge">
+            <MessageCircle size={14} className="whatsapp-icon" aria-hidden="true" />
+            <span>Comunidad de WhatsApp · Clases en Vivo Gratuitas</span>
+          </div>
+          <h3 className="whatsapp-card-title">
+            ¿Quieres repasar las fijas de examen con clases en vivo gratuitas?
+          </h3>
+          <p className="whatsapp-card-desc">
+            Únete a nuestro grupo de WhatsApp para postulantes. Compartimos enlaces a sesiones en vivo, solucionarios de exámenes de admisión (UNI / San Marcos) y tips de resolución rápida.
+          </p>
+        </div>
+        <a
+          href={whatsappCommunityUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="whatsapp-join-btn"
+          title="Unirme al grupo de WhatsApp de clases gratuitas de Química Zenit"
+        >
+          <MessageCircle size={18} />
+          <span>Unirme al Grupo de WhatsApp (Gratis)</span>
+          <ArrowUpRight size={15} />
+        </a>
+      </div>
+    </section>
+  );
+}
+
 
 function Home() {
   const [tableMode, setTableMode] = useState(
@@ -653,6 +1200,36 @@ function Home() {
       if (shell) shell.classList.remove("shell-mode-iupac");
     };
   }, [tableMode]);
+
+  useEffect(() => {
+    const handleSetMode = (e) => {
+      if (e.detail) setTableMode(e.detail);
+    };
+    const handleOpenAdvTool = (e) => {
+      if (e.detail) setAdvancedTool(e.detail);
+    };
+    const handleOpenComp = () => {
+      if (compareElements.length === 0) {
+        const na = elements.find((el) => el.symbol === "Na");
+        const cl = elements.find((el) => el.symbol === "Cl");
+        if (na && cl) setCompareElements([na, cl]);
+      }
+      setShowComparatorModal(true);
+    };
+    const handleOpenMiscon = () => {
+      setShowMisconceptionsModal(true);
+    };
+    window.addEventListener("set-table-mode", handleSetMode);
+    window.addEventListener("open-adv-tool", handleOpenAdvTool);
+    window.addEventListener("open-comparator-modal", handleOpenComp);
+    window.addEventListener("open-misconceptions-modal", handleOpenMiscon);
+    return () => {
+      window.removeEventListener("set-table-mode", handleSetMode);
+      window.removeEventListener("open-adv-tool", handleOpenAdvTool);
+      window.removeEventListener("open-comparator-modal", handleOpenComp);
+      window.removeEventListener("open-misconceptions-modal", handleOpenMiscon);
+    };
+  }, [compareElements]);
 
   // Preload 3D atomic viewer during idle time for instant modal opening
   useEffect(() => {
@@ -1061,6 +1638,29 @@ function Home() {
             <span>Trampas RSC</span>
             <span className="adv-pill">6 Errores</span>
           </button>
+
+          <button
+            type="button"
+            className="adv-tool-btn"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-speller-modal"))}
+            title="Deletreo Químico: escribe cualquier palabra y transfórmala en elementos de la tabla periódica"
+          >
+            <span style={{ fontSize: "14px" }}>🔤</span>
+            <span>Deletreo</span>
+            <span className="adv-pill">Speller</span>
+          </button>
+
+          <button
+            type="button"
+            className="adv-tool-btn"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-study-guide"))}
+            title="Guía Maestra: metodología preuniversitaria y trucos para aprovechar la app"
+          >
+            <BookOpen size={15} />
+            <span>¿Cómo Estudiar?</span>
+            <span className="adv-pill">Tips UNI</span>
+          </button>
+
 
           {advancedTool && (
             <button
@@ -1743,46 +2343,190 @@ function Home() {
         isOpen={showMisconceptionsModal}
         onClose={() => setShowMisconceptionsModal(false)}
       />
+
+      {/* Strategic Downloadable Sheets Section & WhatsApp Funnel */}
+      <LaminasStudySection />
     </main>
   );
 }
 
-function App() {
-  return (
-    <Suspense
-      fallback={
-        <main className="quiz-page">
-          <p>Cargando...</p>
+class GlobalErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("GlobalErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <main className="quiz-page" style={{ padding: "2.5rem 1.5rem", textAlign: "center", maxWidth: "600px", margin: "4rem auto" }}>
+          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>⚛️</div>
+          <h2>Algo inesperado ocurrió</h2>
+          <p style={{ color: "var(--muted, #888)", margin: "1rem 0" }}>
+            Se produjo un inconveniente al renderizar la vista. Puedes volver a la tabla periódica o recargar la página.
+          </p>
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginTop: "1.5rem", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className="primary-btn"
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                window.location.href = "/";
+              }}
+            >
+              Volver a la Tabla Periódica
+            </button>
+            <button
+              type="button"
+              className="action-btn"
+              onClick={() => window.location.reload()}
+            >
+              Recargar
+            </button>
+          </div>
         </main>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function App() {
+  const navigate = useNavigate();
+  const [showStudyGuide, setShowStudyGuide] = useState(false);
+
+  useEffect(() => {
+    const handleOpenGuide = () => setShowStudyGuide(true);
+    window.addEventListener("open-study-guide", handleOpenGuide);
+    return () => window.removeEventListener("open-study-guide", handleOpenGuide);
+  }, []);
+
+  // Global shortcut '?' or 'h'
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        e.target &&
+        (e.target.tagName === "INPUT" ||
+          e.target.tagName === "TEXTAREA" ||
+          e.target.isContentEditable)
+      ) {
+        return;
       }
-    >
-      <Routes>
-        <Route path="/elemento/:elementId" element={<ElementDetailPage />} />
-        <Route
-          path="*"
-          element={
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/diagnostico" element={<DiagnosticPage />} />
-                <Route path="/laboratorio" element={<LabPage />} />
-                <Route path="/docentes" element={<TeacherPage />} />
-                <Route path="/quiz/:topicId" element={<QuizPage />} />
-                <Route
-                  path="*"
-                  element={
-                    <section className="not-found">
-                      <h1>Página no encontrada</h1>
-                      <Link to="/">Volver al inicio</Link>
-                    </section>
-                  }
-                />
-              </Routes>
-            </Layout>
-          }
-        />
-      </Routes>
-    </Suspense>
+      if (e.key === "?" || (e.key === "h" && !e.ctrlKey && !e.metaKey && !e.altKey)) {
+        e.preventDefault();
+        setShowStudyGuide((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleExecuteGuideAction = (actionType) => {
+    switch (actionType) {
+      case "study-mode":
+        localStorage.setItem("quimica-preuni-table-mode", "study");
+        navigate("/");
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("set-table-mode", { detail: "study" }));
+        }, 50);
+        break;
+      case "navigate-lab":
+        navigate("/laboratorio");
+        break;
+      case "navigate-lab-jump":
+        navigate("/laboratorio?tab=jump");
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("switch-lab-tab", { detail: "jump" }));
+        }, 100);
+        break;
+      case "tool-temperature":
+        navigate("/");
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("open-adv-tool", { detail: "temperature" }));
+        }, 100);
+        break;
+      case "tool-comparator":
+        navigate("/");
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("open-comparator-modal"));
+        }, 100);
+        break;
+      case "tool-speller":
+        window.dispatchEvent(new CustomEvent("open-speller-modal"));
+        break;
+      case "tool-misconceptions":
+        window.dispatchEvent(new CustomEvent("open-misconceptions-modal"));
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <GlobalErrorBoundary>
+      <Suspense
+        fallback={
+          <main className="quiz-page">
+            <p>Cargando...</p>
+          </main>
+        }
+      >
+        <Routes>
+          <Route path="/elemento/:elementId" element={<ElementDetailPage />} />
+          <Route
+            path="*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/diagnostico" element={<DiagnosticPage />} />
+                  <Route path="/laboratorio" element={<LabPage />} />
+                  <Route path="/docentes" element={<TeacherPage />} />
+                  <Route path="/quiz/:topicId" element={<QuizPage />} />
+                  <Route
+                    path="*"
+                    element={
+                      <section className="not-found">
+                        <h1>Página no encontrada</h1>
+                        <Link to="/">Volver al inicio</Link>
+                      </section>
+                    }
+                  />
+                </Routes>
+              </Layout>
+            }
+          />
+        </Routes>
+      </Suspense>
+
+      {/* Floating Global Guide Helper Button */}
+      <button
+        type="button"
+        className="floating-guide-trigger"
+        onClick={() => setShowStudyGuide(true)}
+        aria-label="Abrir Guía de Estudio"
+        title="Guía de Estudio: ¿cómo estudiar la tabla periódica? (Atajo: presiona ?)"
+      >
+        <span className="pulsing-dot" />
+        <BookOpen size={16} />
+        <span>¿Cómo Estudiar?</span>
+      </button>
+
+      {/* Interactive Master Study Guide Modal */}
+      <StudyGuideModal
+        isOpen={showStudyGuide}
+        onClose={() => setShowStudyGuide(false)}
+        onExecuteAction={handleExecuteGuideAction}
+      />
+    </GlobalErrorBoundary>
   );
 }
 

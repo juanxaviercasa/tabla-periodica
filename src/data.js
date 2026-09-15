@@ -6,7 +6,9 @@ import {
   iupacFamilies,
   quantumBlocks,
   aggregationPhases,
-  periodicTablePlaceholders
+  periodicTablePlaceholders,
+  ionizationData,
+  calculateQuantumJump
 } from "./elementsData.js";
 
 export const categories = preuniCategories;
@@ -19,8 +21,11 @@ export {
   iupacFamilies,
   quantumBlocks,
   aggregationPhases,
-  periodicTablePlaceholders
+  periodicTablePlaceholders,
+  ionizationData,
+  calculateQuantumJump
 };
+
 
 const quizTopicMap = [
   ["los-38", "elementos-38", 1, "Abre la tabla de arriba", "Reconoce los elementos prioritarios y su ubicación.", "Base", "8 min", "Empieza aquí: te da el mapa del curso."],
