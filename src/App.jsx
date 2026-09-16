@@ -881,6 +881,7 @@ function Layout({ children }) {
           >
             <span className="nav-gift-emoji">📥</span>
             <span className="nav-gift-text">Láminas Gratis ↓</span>
+            <span className="nav-gift-short-text">Láminas</span>
           </button>
           <button
             type="button"
@@ -890,7 +891,8 @@ function Layout({ children }) {
             title="Guía de Estudio: ¿cómo estudiar la tabla periódica y aprovechar la app al 100%?"
           >
             <BookOpen size={14} />
-            <span>¿Cómo Estudiar?</span>
+            <span className="guide-btn-text">¿Cómo Estudiar?</span>
+            <span className="guide-btn-short-text">Guía</span>
           </button>
           <button
             type="button"
@@ -1120,7 +1122,8 @@ function LaminasStudySection() {
           title="Unirme al grupo de WhatsApp de clases gratuitas de Química Zenit"
         >
           <MessageCircle size={18} />
-          <span>Unirme al Grupo de WhatsApp (Gratis)</span>
+          <span className="whatsapp-btn-full-text">Unirme al Grupo de WhatsApp (Gratis)</span>
+          <span className="whatsapp-btn-short-text">Unirme a WhatsApp (Gratis)</span>
           <ArrowUpRight size={15} />
         </a>
       </div>

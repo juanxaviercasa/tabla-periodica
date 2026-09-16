@@ -273,7 +273,7 @@ export function LaminasViewerModal({ isOpen, onClose, initialLaminaId = "complet
                 title="Unirme al grupo de WhatsApp de clases gratuitas"
               >
                 <MessageCircle size={16} />
-                <span>Unirme al Grupo de WhatsApp</span>
+                <span>Unirme a WhatsApp (Gratis)</span>
                 <ArrowUpRight size={14} />
               </a>
             </div>
