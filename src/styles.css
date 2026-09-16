@@ -13012,6 +13012,61 @@ button { cursor: pointer; } a { color: inherit; }
     grid-column: 1 / -1;
   }
 
+  /* Láminas en móvil: una debajo de otra (1 sola columna completa) */
+  .laminas-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+  .lamina-showcase-card {
+    width: 100% !important;
+  }
+  .lamina-showcase-thumb-wrap {
+    height: 200px;
+  }
+
+  /* Recuadro de WhatsApp en móvil: 100% vertical, texto fluido y legible */
+  .laminas-whatsapp-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 20px 16px !important;
+    gap: 16px !important;
+    text-align: left !important;
+  }
+  .whatsapp-card-content {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .whatsapp-card-badge {
+    align-self: flex-start;
+    margin-bottom: 8px;
+    font-size: 10.5px;
+  }
+  .whatsapp-card-title {
+    font-size: 15.5px !important;
+    line-height: 1.35 !important;
+    margin: 0 0 6px !important;
+  }
+  .whatsapp-card-desc {
+    font-size: 12.5px !important;
+    line-height: 1.5 !important;
+  }
+  .whatsapp-join-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 13px 16px !important;
+    font-size: 13.5px !important;
+    min-height: 48px !important;
+    white-space: normal !important;
+  }
+  .whatsapp-btn-full-text {
+    display: inline;
+  }
+  .whatsapp-btn-short-text {
+    display: none;
+  }
+
   /* Contact CTA (Skool): NUNCA STICKY NI ANCLADO PERENNE. Sección final elegante y natural */
   .contact-cta {
     position: static !important;
