@@ -3828,6 +3828,248 @@ button { cursor: pointer; } a { color: inherit; }
   }
 }
 
+/* Mobile detail layout: keep every module inside the viewport. */
+@media (max-width: 640px) {
+  .element-detail-page,
+  .element-detail-page * {
+    box-sizing: border-box;
+  }
+
+  .detail-topbar {
+    align-items: stretch;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    min-width: 0;
+  }
+
+  .topbar-left {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+
+  .topbar-right {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .quick-jump-container,
+  .quick-jump-toggle {
+    min-width: 0;
+  }
+
+  .quick-jump-toggle {
+    max-width: 100%;
+  }
+
+  .jump-current {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .quick-jump-popover {
+    left: 0;
+    right: 0;
+    width: min(310px, calc(100vw - 24px));
+  }
+
+  .detail-guide-btn span,
+  .topbar-share-btn .share-text {
+    display: none;
+  }
+
+  .detail-container {
+    width: 100%;
+    padding: 12px 12px 32px;
+    gap: 16px;
+  }
+
+  .detail-hero-showcase,
+  .detail-bento-grid {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .specimen-gallery-card,
+  .quantum-lab-card,
+  .bento-card {
+    min-width: 0;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .specimen-header,
+  .specimen-identity,
+  .lab-header,
+  .bento-card-header,
+  .pedagogical-title-group {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .specimen-title {
+    min-width: 0;
+    font-size: clamp(22px, 8vw, 28px);
+    overflow-wrap: anywhere;
+  }
+
+  .specimen-family-tag,
+  .preuni-distinction-badge,
+  .lab-footer-note,
+  .metric-label,
+  .mini-label,
+  .mini-value,
+  .config-display,
+  .bento-card-header h3,
+  .pedagogy-card h4,
+  .jump-heading,
+  .jump-desc-text,
+  .diagnosis-text,
+  .challenge-context,
+  .challenge-question,
+  .feedback-rationale {
+    overflow-wrap: anywhere;
+  }
+
+  .specimen-lab-actions,
+  .detail-visualizer-toggle-group,
+  .lab-hud-particles,
+  .bohr-toolbar,
+  .bohr-actions-right,
+  .jump-widget-header,
+  .jump-title-group,
+  .jump-tabs-nav,
+  .challenge-meta-row,
+  .calc-label,
+  .calc-input-group {
+    flex-wrap: wrap;
+  }
+
+  .specimen-lab-btn,
+  .detail-view-toggle-btn,
+  .jump-tab-btn,
+  .bohr-btn,
+  .calc-text-input,
+  .calc-reset-btn {
+    max-width: 100%;
+  }
+
+  .specimen-lab-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .lab-canvas-viewport {
+    height: auto;
+    min-height: 0;
+  }
+
+  .lab-canvas-viewport .atom-canvas-stage {
+    min-height: 300px;
+  }
+
+  .atomic-bohr-container,
+  .quantum-jump-widget {
+    min-width: 0;
+  }
+
+  .bohr-badge-left {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .bohr-subtitle {
+    overflow-wrap: anywhere;
+  }
+
+  .bohr-actions-right {
+    width: 100%;
+  }
+
+  .bohr-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .bohr-shells-ribbon {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+
+  .bohr-shell-pill {
+    min-width: 0;
+  }
+
+  .bohr-pedagogy-footer,
+  .property-mini-grid,
+  .pedagogy-four-grid,
+  .flashcards-layout-grid,
+  .jump-predictions-row,
+  .challenge-options-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bohr-canvas-wrap {
+    width: min(100%, 360px);
+  }
+
+  .jump-tabs-nav {
+    width: 100%;
+  }
+
+  .jump-tab-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .jump-bars-container {
+    gap: 6px;
+  }
+
+  .jump-bar-column {
+    min-width: 0;
+  }
+
+  .jump-bar-label small,
+  .jump-bar-val {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .challenge-meta-row {
+    align-items: flex-start;
+  }
+
+  .challenge-next-btn {
+    margin-left: auto;
+  }
+
+  .calc-label {
+    gap: 4px;
+  }
+
+  .calc-label small {
+    display: block;
+  }
+
+  .calc-input-group {
+    align-items: stretch;
+  }
+
+  .calc-text-input,
+  .calc-reset-btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
+
 /* ==========================================================================
    ADVANCED MODULES: GROUP/PERIOD INSPECTOR, TRENDS, HEATMAP, TEMPERATURE & COMPARE
    ========================================================================== */
