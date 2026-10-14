@@ -60,7 +60,7 @@ export function TemperatureSlider({
           <div>
             <h4 className="temp-title">Control Térmico y Estados de Agregación</h4>
             <span className="temp-subtitle">
-              Simulación de fases físicas según puntos de fusión y ebullición
+              Modelo aproximado a 1 atm; incluye sublimación de C y As. Los datos no disponibles se muestran como desconocidos.
             </span>
           </div>
         </div>

@@ -1,6 +1,9 @@
+import { readStoredValue, writeStoredValue } from "../utils/safeStorage.js";
+import { useModalDialog } from "../hooks/useModalDialog.js";
 import React, { useState, useEffect, useMemo } from "react";
 import {
   BookOpen,
+  Flame,
   Target,
   Atom,
   Zap,
@@ -27,7 +30,7 @@ export const STUDY_GUIDE_MODULES = [
     icon: Target,
     badge: "Estrategia",
     title: "1. Los 38 Esenciales vs IUPAC",
-    summary: "Por qué dominar 38 elementos te da más del 90% del puntaje en química de admisión.",
+    summary: "Cómo organizar el estudio inicial con 38 elementos priorizados y ampliar después.",
     color: "#f59e0b",
     tags: ["Pre-UNI", "Modo Estudio", "IUPAC", "San Marcos", "Pareto"],
     content: {
@@ -35,18 +38,18 @@ export const STUDY_GUIDE_MODULES = [
       principles: [
         {
           heading: "El Principio de Pareto (Regla 80/20):",
-          text: "El 92% de las preguntas de estructura atómica, tabla periódica, enlaces y estequiometría se centran en los primeros 4 períodos (Z = 1 al 36), más metales nobles y pesados representativos (Ag, Au, Hg, Pb, U)."
+          text: "Empieza con elementos frecuentes en los ejercicios del curso y amplía el estudio según el temario y los exámenes oficiales de la universidad a la que postulas."
         },
         {
           heading: "Modo Estudio Pre-UNI vs Modo IUPAC Completo:",
-          text: "Usa el selector superior 'Modo Estudio Pre-UNI' para atenuar los 80 elementos de relleno y enfocarte en los 38 con estrella dorada ★. Cuando necesites investigar elementos raros, sintéticos o lantánidos, cambia a 'Modo IUPAC'."
+          text: "Usa el selector superior 'Modo Estudio Pre-UNI' para atenuar los otros 80 elementos y enfocarte en los 38 con estrella dorada ★. Cuando necesites investigar elementos raros, sintéticos o lantánidos, cambia a 'Modo IUPAC'."
         },
         {
           heading: "La Tríada de Oro (Z, Símbolo, Masa redondeada):",
           text: "Memoriza las masas atómicas clave más usadas en estequiometría: H = 1, C = 12, N = 14, O = 16, Na = 23, Mg = 24, Al = 27, P = 31, S = 32, Cl = 35.5, K = 39, Ca = 40, Fe = 56, Cu = 63.5."
         }
       ],
-      examTip: "En UNI nunca te pedirán el peso atómico del Lawrencio o del Moscovio; pero dominar que el Cloro es 35.5 y el Carbono es 12 te ahorrará hasta 3 minutos por problema de cálculo estequiométrico.",
+      examTip: "En problemas escolares suelen usarse masas redondeadas. Usa siempre los valores indicados en el enunciado y revisa el temario oficial de tu examen.",
       actionLabel: "Activar Modo Estudio en la Tabla",
       actionType: "study-mode"
     }
@@ -101,7 +104,7 @@ export const STUDY_GUIDE_MODULES = [
         },
         {
           heading: "La Fórmula Mnemotécnica Pre-UNI:",
-          text: "Si el salto gigantesco ocurre al pasar a Iₙ₊₁, el elemento tiene exactamente 'n' electrones de valencia y pertenece al Grupo 'n'A."
+          text: "En ejercicios de elementos representativos, un gran salto tras retirar n electrones externos puede indicar n electrones de valencia. No se aplica automáticamente a gases nobles ni a metales de transición."
         }
       ],
       examTip: "Ejemplo: I₁ = 496 kJ/mol, I₂ = 4562 kJ/mol (¡salto de 9.2×!). El salto está en I₂ → Tiene 1 electrón de valencia → Es del Grupo IA (Alcalino, como el Sodio).",
@@ -184,7 +187,7 @@ export const STUDY_GUIDE_MODULES = [
         },
         {
           heading: "Cálculo de Masa Molar y Estadísticas Reales:",
-          text: "Cada palabra sintetizada calcula la masa molar molecular total (Σ masa atómica), el número atómico acumulado (Σ Z) y el porcentaje de elementos Pre-UNI que contiene."
+          text: "Cada secuencia suma las masas atómicas y los números atómicos de sus símbolos. Es un juego de memoria: no demuestra que exista una molécula con esa fórmula."
         },
         {
           heading: "Variantes Múltiples de Deletreo:",
@@ -249,7 +252,7 @@ export const STUDY_GUIDE_MODULES = [
           text: "Participa en transmisiones periódicas donde analizamos las fijas de admisión y estrategias para resolver preguntas en menos de 90 segundos."
         }
       ],
-      examTip: "Aprender en comunidad aumenta en un 64% la retención conceptual y evita que pierdas horas atascado en un problema de examen.",
+      examTip: "Estudiar en comunidad te permite consultar dudas, explicar tu razonamiento y practicar con acompañamiento.",
       actionLabel: "Acceder a la Comunidad en Skool",
       actionType: "open-community"
     }
@@ -257,12 +260,14 @@ export const STUDY_GUIDE_MODULES = [
 ];
 
 export function StudyGuideModal({ isOpen, onClose, onExecuteAction }) {
+  const dialogRef = useModalDialog(isOpen, onClose);
   const [activeTabId, setActiveTabId] = useState("strategy");
   const [searchQuery, setSearchQuery] = useState("");
   const [readModules, setReadModules] = useState(() => {
     try {
-      const saved = localStorage.getItem("quimica-preuni-guide-read");
-      return saved ? JSON.parse(saved) : ["strategy"];
+      const saved = readStoredValue("quimica-preuni-guide-read");
+      const parsed = saved ? JSON.parse(saved) : null;
+      return Array.isArray(parsed) ? parsed.filter(id => STUDY_GUIDE_MODULES.some(module => module.id === id)) : ["strategy"];
     } catch {
       return ["strategy"];
     }
@@ -271,23 +276,13 @@ export function StudyGuideModal({ isOpen, onClose, onExecuteAction }) {
   // Sync read modules to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem("quimica-preuni-guide-read", JSON.stringify(readModules));
+      writeStoredValue("quimica-preuni-guide-read", JSON.stringify(readModules));
     } catch (err) {
       console.warn("Could not persist guide progress:", err);
     }
   }, [readModules]);
 
   // Keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
 
   const activeModule = useMemo(() => {
     return STUDY_GUIDE_MODULES.find((m) => m.id === activeTabId) || STUDY_GUIDE_MODULES[0];
@@ -329,7 +324,7 @@ export function StudyGuideModal({ isOpen, onClose, onExecuteAction }) {
   const progressPercent = Math.round((readModules.length / totalModules) * 100);
 
   return (
-    <div className="guide-modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <div className="guide-modal-backdrop" onClick={onClose} ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="guide-title">
       <div className="guide-modal-window" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="guide-modal-header">

@@ -401,7 +401,7 @@ export const periodicTrendsData = [
   {
     id: "density",
     label: "Densidad",
-    shortDesc: "Masa por unidad de volumen a 293 K",
+    shortDesc: "Masa por unidad de volumen; los gases usan las condiciones de referencia del dato",
     unit: "g/cm³",
     dirH: "none",
     dirV: "none",

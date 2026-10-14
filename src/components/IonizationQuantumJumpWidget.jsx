@@ -28,14 +28,14 @@ export function IonizationQuantumJumpWidget({
   const [activeTab, setActiveTab] = useState(initialMode);
 
   // Element analysis state
-  const z = element?.z || element?.number || 11; // default to Na for demo if null
+  const z = element?.z || element?.number;
   const elementEnergies = useMemo(() => {
-    return ionizationData[z] || [element?.ionization || 1000];
+    return ionizationData[z] || [];
   }, [z, element]);
 
   const elementJump = useMemo(() => {
-    return calculateQuantumJump(elementEnergies);
-  }, [elementEnergies]);
+    return calculateQuantumJump(elementEnergies, { element });
+  }, [elementEnergies, element]);
 
   // Challenge mode state
   const [challengeIdx, setChallengeIdx] = useState(0);
@@ -46,16 +46,14 @@ export function IonizationQuantumJumpWidget({
 
   // Custom calculator state
   const [customInput, setCustomInput] = useState("578, 1817, 2745, 11577");
+  const [representativeExercise, setRepresentativeExercise] = useState(false);
   const customEnergies = useMemo(() => {
-    return customInput
-      .split(/[\s,]+/)
-      .map((val) => parseFloat(val))
-      .filter((num) => !isNaN(num) && num > 0);
+    return customInput.trim() ? customInput.trim().split(/[\s,]+/).map(Number) : [];
   }, [customInput]);
 
   const customJump = useMemo(() => {
-    return calculateQuantumJump(customEnergies);
-  }, [customEnergies]);
+    return calculateQuantumJump(customEnergies, { representative: representativeExercise });
+  }, [customEnergies, representativeExercise]);
 
   return (
     <div className={`quantum-jump-widget ${className}`}>
@@ -106,7 +104,7 @@ export function IonizationQuantumJumpWidget({
           <div className="jump-element-summary">
             <p className="jump-desc-text">
               Las energías de ionización sucesivas representan la energía necesaria para arrancar el 1°, 2°, 3° y subsiguientes electrones en estado gaseoso.
-              Observa cómo se produce un <strong>salto exponencial</strong> cuando se intenta arrancar un electrón de la capa interna (gas noble).
+              En elementos representativos, un <strong>gran incremento</strong> puede indicar el paso de electrones externos a internos. No basta con el cociente mayor para clasificar cualquier elemento.
             </p>
           </div>
 
@@ -164,19 +162,15 @@ export function IonizationQuantumJumpWidget({
             <div className="jump-predictions-row">
               <div className="pred-item">
                 <small>Electrones de Valencia:</small>
-                <strong>{elementJump.valenceElectrons} e⁻</strong>
+                <strong>{elementJump.valenceElectrons === null ? "Dependen de los subniveles" : `${elementJump.valenceElectrons} e⁻`}</strong>
               </div>
               <div className="pred-item">
-                <small>Grupo Teórico IUPAC:</small>
-                <strong>{elementJump.prediction.group}</strong>
+                <small>Grupo del catálogo:</small>
+                <strong>{elementJump.prediction?.group ?? "Sin datos"}</strong>
               </div>
               <div className="pred-item">
-                <small>Catión Estable Típico:</small>
-                <strong className="text-sky">{elementJump.prediction.ion}</strong>
-              </div>
-              <div className="pred-item">
-                <small>Óxido Característico:</small>
-                <strong>{elementJump.prediction.oxide}</strong>
+                <small>Estados de oxidación del catálogo:</small>
+                <strong className="text-sky">{element?.oxidation_states ?? "Sin datos"}</strong>
               </div>
             </div>
           </div>
@@ -297,8 +291,13 @@ export function IonizationQuantumJumpWidget({
             </div>
           </div>
 
+          <label className="calc-scope-label">
+            <input type="checkbox" checked={representativeExercise} onChange={e => setRepresentativeExercise(e.target.checked)} />
+            El ejercicio especifica un elemento representativo y permite identificar el paso a electrones internos.
+          </label>
+
           {/* Calculator Results */}
-          {customEnergies.length >= 2 ? (
+          {customJump.status !== "invalid" && customEnergies.length >= 2 ? (
             <div className="calc-results-block">
               <div className="calc-ratios-row">
                 {customJump.ratios.map((r, idx) => (
@@ -316,7 +315,7 @@ export function IonizationQuantumJumpWidget({
               <div className="calc-diagnosis-banner">
                 <h4>Predicción de Clasificación Periódica:</h4>
                 <p>{customJump.diagnosis}</p>
-                <div className="jump-predictions-row">
+                {customJump.prediction && <div className="jump-predictions-row">
                   <div className="pred-item">
                     <small>Electrones de Valencia:</small>
                     <strong>{customJump.valenceElectrons} e⁻</strong>
@@ -326,20 +325,16 @@ export function IonizationQuantumJumpWidget({
                     <strong>{customJump.prediction.group}</strong>
                   </div>
                   <div className="pred-item">
-                    <small>Catión Estable:</small>
-                    <strong className="text-sky">{customJump.prediction.ion}</strong>
+                    <small>Ion habitual en familias representativas:</small>
+                    <strong className="text-sky">{customJump.prediction.ion ?? "No se deduce solo del salto"}</strong>
                   </div>
-                  <div className="pred-item">
-                    <small>Óxido Típico:</small>
-                    <strong>{customJump.prediction.oxide}</strong>
-                  </div>
-                </div>
+                </div>}
               </div>
             </div>
           ) : (
             <div className="calc-empty-note">
               <Info size={18} />
-              <span>Por favor ingresa al menos 2 valores numéricos positivos para calcular los cocientes de salto.</span>
+              <span>Ingresa al menos dos valores positivos en orden estrictamente creciente. Usa comas para separarlos y punto para los decimales.</span>
             </div>
           )}
         </div>

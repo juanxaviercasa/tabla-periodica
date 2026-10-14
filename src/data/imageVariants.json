@@ -1,0 +1,956 @@
+{
+  "/visuals/achievement-unlocked.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/visuals/achievement-unlocked-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/achievement-unlocked-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/achievement-unlocked-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/visuals/alkali-metals.jpg": {
+    "width": 1200,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/alkali-metals-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/alkali-metals-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/alkali-metals-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/atomic-models.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/atomic-models-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/atomic-models-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/atomic-models-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/atomic-radius-trend.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/atomic-radius-trend-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/atomic-radius-trend-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/atomic-radius-trend-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/chemical-equilibrium.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/chemical-equilibrium-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/chemical-equilibrium-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/chemical-equilibrium-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/chemical-reaction.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/chemical-reaction-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/chemical-reaction-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/chemical-reaction-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/covalent-bond.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/covalent-bond-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/covalent-bond-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/covalent-bond-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/diagnostic-compass.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/diagnostic-compass-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/diagnostic-compass-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/diagnostic-compass-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/electrochemistry.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/electrochemistry-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/electrochemistry-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/electrochemistry-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/electron-configuration.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/electron-configuration-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/electron-configuration-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/electron-configuration-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/electronegativity.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/electronegativity-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/electronegativity-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/electronegativity-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/equation-balancing.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/equation-balancing-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/equation-balancing-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/equation-balancing-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/gas-laws.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/gas-laws-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/gas-laws-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/gas-laws-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/halogens-noble-gases.jpg": {
+    "width": 1200,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/halogens-noble-gases-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/halogens-noble-gases-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/halogens-noble-gases-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/hero-periodic-map.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/hero-periodic-map-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/hero-periodic-map-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/hero-periodic-map-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/intermolecular-forces.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/intermolecular-forces-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/intermolecular-forces-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/intermolecular-forces-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/ion-charge.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/visuals/ion-charge-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/ion-charge-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/ion-charge-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/visuals/ionic-bond.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/ionic-bond-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/ionic-bond-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/ionic-bond-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/ionization-energy.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/ionization-energy-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/ionization-energy-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/ionization-energy-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/isotopes-scale.jpg": {
+    "width": 1200,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/isotopes-scale-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/isotopes-scale-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/isotopes-scale-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/lab-atom-builder.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/lab-atom-builder-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/lab-atom-builder-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/lab-atom-builder-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/limiting-reactant.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/limiting-reactant-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/limiting-reactant-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/limiting-reactant-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/metallic-bond.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/metallic-bond-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/metallic-bond-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/metallic-bond-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/module-certificate.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/module-certificate-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/module-certificate-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/module-certificate-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/molecular-geometry.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/molecular-geometry-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/molecular-geometry-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/molecular-geometry-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/path-exam.jpg": {
+    "width": 1592,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/path-exam-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/path-exam-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/path-exam-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/path-understanding.jpg": {
+    "width": 1592,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/path-understanding-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/path-understanding-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/path-understanding-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/periodic-layers.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/periodic-layers-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/periodic-layers-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/periodic-layers-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/ph-scale.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/ph-scale-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/ph-scale-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/ph-scale-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/quantum-numbers.jpg": {
+    "width": 1200,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/quantum-numbers-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/quantum-numbers-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/quantum-numbers-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/quantum-orbitals.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/quantum-orbitals-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/quantum-orbitals-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/quantum-orbitals-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/radioactivity.jpg": {
+    "width": 1200,
+    "height": 896,
+    "variants": [
+      {
+        "src": "/visuals/radioactivity-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/radioactivity-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/radioactivity-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/reaction-kinetics.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/reaction-kinetics-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/reaction-kinetics-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/reaction-kinetics-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/solutions-concentration.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/solutions-concentration-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/solutions-concentration-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/solutions-concentration-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/stoichiometry.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/stoichiometry-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/stoichiometry-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/stoichiometry-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/student-avatar.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/visuals/student-avatar-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/student-avatar-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/student-avatar-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/visuals/teacher-learning-map.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/teacher-learning-map-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/teacher-learning-map-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/teacher-learning-map-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/visuals/thermochemistry.jpg": {
+    "width": 1376,
+    "height": 768,
+    "variants": [
+      {
+        "src": "/visuals/thermochemistry-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/visuals/thermochemistry-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/visuals/thermochemistry-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "/real-elements/al.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/al-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/al-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/al-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/au.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/au-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/au-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/au-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/b.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/b-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/b-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/b-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/be.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/be-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/be-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/be-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/c.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/c-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/c-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/c-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/co.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/co-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/co-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/co-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/f.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/f-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/f-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/f-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/h.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/h-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/h-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/h-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/he.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/he-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/he-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/he-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/li.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/li-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/li-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/li-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/mg.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/mg-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/mg-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/mg-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/n.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/n-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/n-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/n-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/na.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/na-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/na-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/na-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/ne.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/ne-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/ne-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/ne-1024.webp",
+        "width": 1024
+      }
+    ]
+  },
+  "/real-elements/o.jpg": {
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "src": "/real-elements/o-320.webp",
+        "width": 320
+      },
+      {
+        "src": "/real-elements/o-640.webp",
+        "width": 640
+      },
+      {
+        "src": "/real-elements/o-1024.webp",
+        "width": 1024
+      }
+    ]
+  }
+}

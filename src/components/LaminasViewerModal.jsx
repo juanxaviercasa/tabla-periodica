@@ -1,3 +1,4 @@
+import { useModalDialog } from "../hooks/useModalDialog.js";
 import React, { useState, useEffect } from "react";
 import {
   X,
@@ -65,6 +66,7 @@ const LAMINAS_DATA = [
 ];
 
 export function LaminasViewerModal({ isOpen, onClose, initialLaminaId = "completa" }) {
+  const dialogRef = useModalDialog(isOpen, onClose);
   const [activeId, setActiveId] = useState(initialLaminaId);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -77,7 +79,6 @@ export function LaminasViewerModal({ isOpen, onClose, initialLaminaId = "complet
   // Keyboard navigation: Escape to close, arrows to switch sheets
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         setActiveId((prev) => (prev === "completa" ? "con-imagenes" : "completa"));
         setIsZoomed(false);
@@ -85,11 +86,11 @@ export function LaminasViewerModal({ isOpen, onClose, initialLaminaId = "complet
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
+
     }
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+
     };
   }, [isOpen, onClose]);
 
@@ -101,7 +102,7 @@ export function LaminasViewerModal({ isOpen, onClose, initialLaminaId = "complet
     <div
       className="laminas-modal-overlay"
       onClick={onClose}
-      role="dialog"
+      ref={dialogRef} tabIndex={-1} role="dialog"
       aria-modal="true"
       aria-labelledby="laminas-modal-title"
     >

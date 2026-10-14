@@ -1,3 +1,5 @@
+import { StudyImage, hasStudyImage } from "./components/StudyImage.jsx";
+import { readStoredValue, writeStoredValue } from "./utils/safeStorage.js";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
@@ -31,10 +33,11 @@ import {
 import { elements118, iupacFamilies } from "./data.js";
 import { getElementPedagogy } from "./data/pedagogyData.js";
 import { getElementIsotopes } from "./data/isotopesData.js";
-import { MisconceptionsGuideModal } from "./components/MisconceptionsGuideModal.jsx";
+import { MisconceptionsGuideModal } from "./components/DeferredModals.jsx";
 import { AtomicBohrVisualizer } from "./components/AtomicBohrVisualizer.jsx";
 import { IonizationQuantumJumpWidget } from "./components/IonizationQuantumJumpWidget.jsx";
 import { communityUrl } from "./config.js";
+import { CatalogSources } from "./components/CatalogSources.jsx";
 
 
 const AtomViewer3D = lazy(() => import("./components/AtomViewer3D.jsx"));
@@ -82,7 +85,7 @@ export default function ElementDetailPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [imageError, setImageError] = useState(false);
   const [darkMode, setDarkMode] = useState(
-    () => localStorage.getItem("quimica-preuni-theme") === "dark"
+    () => readStoredValue("quimica-preuni-theme") === "dark"
   );
   const [revealedQuiz, setRevealedQuiz] = useState({});
   const [showMisconceptionsModal, setShowMisconceptionsModal] = useState(false);
@@ -95,7 +98,7 @@ export default function ElementDetailPage() {
   // Sync theme with document and localStorage
   useEffect(() => {
     document.documentElement.dataset.theme = darkMode ? "dark" : "light";
-    localStorage.setItem("quimica-preuni-theme", darkMode ? "dark" : "light");
+    writeStoredValue("quimica-preuni-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
   // Sync with storage changes from other tabs (like homepage)
@@ -166,7 +169,7 @@ export default function ElementDetailPage() {
   // Keyboard shortcuts: Left/Right arrows for adjacent elements
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (e.target.closest('input, select, textarea, [contenteditable="true"], [role="dialog"]')) return;
       if (e.key === "ArrowLeft" && prevElement) {
         navigate(`/elemento/${prevElement.symbol.toLowerCase()}`);
       } else if (e.key === "ArrowRight" && nextElement) {
@@ -403,10 +406,10 @@ export default function ElementDetailPage() {
             </div>
 
             <div className="specimen-frame-wrapper">
-              {!imageError ? (
+              {!imageError && hasStudyImage(`/real-elements/${element.symbol.toLowerCase()}.jpg`) ? (
                 <>
                   {/* Atmospheric blurred ambient backlight generated from the image */}
-                  <img
+                  <StudyImage
                     src={`/real-elements/${element.symbol.toLowerCase()}.jpg`}
                     alt=""
                     className="specimen-ambient-blur"
@@ -414,7 +417,7 @@ export default function ElementDetailPage() {
                   />
 
                   {/* Pristine Uncropped Photograph */}
-                  <img
+                  <StudyImage
                     src={`/real-elements/${element.symbol.toLowerCase()}.jpg`}
                     alt={`Espécimen natural y apariencia física de ${element.name} (${element.symbol})`}
                     className="specimen-img-contain"
@@ -1009,6 +1012,8 @@ export default function ElementDetailPage() {
           </div>
         </section>
 
+        <CatalogSources element={element} />
+
         {/* Footer Navigation Bar */}
         <footer className="detail-footer">
           <div className="detail-footer-inner">
@@ -1016,7 +1021,7 @@ export default function ElementDetailPage() {
               <ArrowLeft size={16} /> Volver al catálogo completo de la tabla
             </Link>
             <span className="footer-credits">
-              Plataforma Educativa de Química Preuniversitaria · Catálogo Oficial 118 IUPAC
+              Plataforma Educativa de Química Preuniversitaria · 118 elementos reconocidos por IUPAC
             </span>
           </div>
         </footer>

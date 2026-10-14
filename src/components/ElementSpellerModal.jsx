@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useModalDialog } from "../hooks/useModalDialog.js";
+import React, { useState, useMemo } from "react";
 import {
   X,
   Sparkles,
@@ -29,24 +30,12 @@ function getFamilyColor(familyName) {
 }
 
 export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
+  const dialogRef = useModalDialog(isOpen, onClose);
   const [inputText, setInputText] = useState("GENIO");
   const [wordSolutionsIdx, setWordSolutionsIdx] = useState({});
   const [copied, setCopied] = useState(false);
 
   // Close on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
 
   // Spell the input phrase
   const phraseResult = useMemo(() => {
@@ -76,7 +65,7 @@ export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
 
   const handleCopy = () => {
     if (!stats.formulaText) return;
-    const textToCopy = `${stats.formulaText} = ${stats.fullDescription}\n(Total protones: ${stats.totalProtons} | Masa molar: ${stats.totalMass} u)`;
+    const textToCopy = `${stats.formulaText} = ${stats.fullDescription}\n(Total protones: ${stats.totalProtons} | Suma de masas atómicas: ${stats.totalMass} u)`;
     navigator.clipboard?.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);
@@ -99,7 +88,7 @@ export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
     <div
       className="speller-modal-overlay"
       onClick={onClose}
-      role="dialog"
+      ref={dialogRef} tabIndex={-1} role="dialog"
       aria-modal="true"
       aria-labelledby="speller-modal-title"
     >
@@ -120,7 +109,7 @@ export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
               </div>
               <h2 id="speller-modal-title">Deletreo Químico (Word Speller)</h2>
               <p className="speller-subtitle">
-                Escribe palabras o frases y sintetízalas en secuencias de elementos químicos con masa molar y número atómico reales.
+                Escribe palabras o frases y sintetízalas en secuencias de elementos químicos para aprender símbolos y nombres. La secuencia no representa necesariamente una molécula.
               </p>
             </div>
           </div>
@@ -155,7 +144,7 @@ export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
                   setWordSolutionsIdx({});
                 }}
                 placeholder="Ejemplo: CHOCOLATE, GENIO, PERU..."
-                autoFocus
+                data-dialog-initial-focus
                 maxLength={45}
               />
               {inputText && (
@@ -305,9 +294,9 @@ export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
               </div>
 
               <div className="metric-box">
-                <span className="metric-label">Masa Molar Teórica</span>
-                <strong className="metric-value">{stats.totalMass} g/mol</strong>
-                <small className="metric-hint">Suma ponderada isotópica</small>
+                <span className="metric-label">Suma de Masas Atómicas</span>
+                <strong className="metric-value">{stats.totalMass} u</strong>
+                <small className="metric-hint">Suma de las masas de los símbolos</small>
               </div>
 
               <div className="metric-box">
@@ -360,7 +349,7 @@ export function ElementSpellerModal({ isOpen, onClose, onSelectElement }) {
           <div className="footer-status-text">
             {stats.formulaText ? (
               <span>
-                Fórmula construida: <strong>{stats.formulaText}</strong> ({activeElements.length} átomos)
+                Secuencia construida: <strong>{stats.formulaText}</strong> ({activeElements.length} símbolos)
               </span>
             ) : (
               <span>Escribe una palabra para ver el resultado</span>

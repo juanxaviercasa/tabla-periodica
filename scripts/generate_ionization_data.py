@@ -148,75 +148,7 @@ export const ionizationData = ''' + json.dumps(NIST_IONIZATIONS, indent=2) + '''
  * @param {Array<number>} energies - Array of successive ionization energies [I1, I2, I3, ...]
  * @returns {Object} Quantum jump analysis with pedagogical diagnosis
  */
-export function calculateQuantumJump(energies) {
-  if (!energies || energies.length < 2) {
-    return {
-      hasJump: false,
-      valenceElectrons: 1,
-      jumpIndex: 1,
-      maxRatio: 1,
-      ratios: [],
-      diagnosis: "Se requieren al menos 2 energías de ionización sucesivas para determinar el salto cuántico."
-    };
-  }
-
-  const ratios = [];
-  let maxRatio = -1;
-  let jumpIndex = 1; // 1-based: jump happens after removing 'jumpIndex' electrons
-
-  for (let i = 0; i < energies.length - 1; i++) {
-    const prev = energies[i];
-    const next = energies[i + 1];
-    const ratio = prev > 0 ? parseFloat((next / prev).toFixed(2)) : 0;
-    ratios.push({
-      from: i + 1,
-      to: i + 2,
-      ratio,
-      prevVal: prev,
-      nextVal: next
-    });
-
-    if (ratio > maxRatio) {
-      maxRatio = ratio;
-      jumpIndex = i + 1;
-    }
-  }
-
-  // Pre-UNI Group predictions based on valence electrons
-  const groupMap = {
-    1: { group: "Grupo 1 (IA)", family: "Alcalinos", ion: "X⁺", oxide: "X₂O", valencia: 1 },
-    2: { group: "Grupo 2 (IIA)", family: "Alcalinotérreos", ion: "X²⁺", oxide: "XO", valencia: 2 },
-    3: { group: "Grupo 13 (IIIA)", family: "Térreos / Boroideos", ion: "X³⁺", oxide: "X₂O₃", valencia: 3 },
-    4: { group: "Grupo 14 (IVA)", family: "Carbonoideos", ion: "X⁴⁺", oxide: "XO₂", valencia: 4 },
-    5: { group: "Grupo 15 (VA)", family: "Nitrogenoideos", ion: "X⁵⁺ / X³⁻", oxide: "X₂O₅", valencia: 5 },
-    6: { group: "Grupo 16 (VIA)", family: "Calcógenos / Anfígenos", ion: "X²⁻", oxide: "XO₃", valencia: 6 },
-    7: { group: "Grupo 17 (VIIA)", family: "Halógenos", ion: "X⁻", oxide: "X₂O₇", valencia: 7 },
-    8: { group: "Grupo 18 (VIIIA)", family: "Gases Nobles", ion: "Inerte", oxide: "Inerte", valencia: 0 }
-  };
-
-  const prediction = groupMap[jumpIndex] || {
-    group: `Grupo con ${jumpIndex} electrones de valencia`,
-    family: "Metal de transición o representativo",
-    ion: `X^${jumpIndex}+`,
-    oxide: `Compuesto con valencia ${jumpIndex}`,
-    valencia: jumpIndex
-  };
-
-  const hasSignificantJump = maxRatio >= 2.0;
-
-  return {
-    hasJump: hasSignificantJump,
-    valenceElectrons: jumpIndex,
-    jumpIndex,
-    maxRatio,
-    ratios,
-    prediction,
-    energies,
-    diagnosis: hasSignificantJump
-      ? `Gran salto cuántico de ${maxRatio}× entre I${jumpIndex} (${energies[jumpIndex - 1]} kJ/mol) e I${jumpIndex + 1} (${energies[jumpIndex]} kJ/mol). Esto demuestra que el elemento posee ${jumpIndex} electrón${jumpIndex === 1 ? "" : "es"} en su capa de valencia externa. Al retirar el electrón número ${jumpIndex + 1}, se rompe un octeto interno de gas noble mucho más cercano al núcleo.`
-      : `El incremento entre ionizaciones sucesivas es gradual (${maxRatio}×), característico de electrones del mismo subnivel o bloque de transición.`
-  };
-}
+export { calculateQuantumJump } from "./ionizationAnalysis.js";
 
 /**
  * Curated list of typical Pre-UNI / Admisión questions involving mystery elements and ionization quantum jumps.
@@ -225,7 +157,7 @@ export const PREUNI_IONIZATION_CHALLENGES = [
   {
     id: "uni-na-jump",
     title: "Pregunta Tipo UNI: Elemento X con I₁=496 y I₂=4562",
-    context: "Un elemento desconocido 'X' del tercer período presenta las siguientes energías de ionización sucesivas en kJ/mol: I₁ = 496, I₂ = 4562, I₃ = 6910, I₄ = 9543.",
+    context: "Un metal representativo desconocido 'X' del tercer período presenta las siguientes energías de ionización sucesivas en kJ/mol: I₁ = 496, I₂ = 4562, I₃ = 6910, I₄ = 9543.",
     energies: [496, 4562, 6910, 9543],
     question: "¿A qué familia de la tabla periódica pertenece el elemento X y qué tipo de óxido forma?",
     options: [
@@ -255,7 +187,7 @@ export const PREUNI_IONIZATION_CHALLENGES = [
   {
     id: "uni-al-jump",
     title: "Pregunta Tipo UNI: Elemento Z con I₁=578, I₂=1817, I₃=2745, I₄=11577",
-    context: "Se analizan en laboratorio las cuatro energías de ionización sucesivas de una muestra pura 'Z' (en kJ/mol): I₁ = 578, I₂ = 1817, I₃ = 2745, I₄ = 11577.",
+    context: "Se analizan en laboratorio las cuatro energías de ionización sucesivas de un metal representativo 'Z' (en kJ/mol): I₁ = 578, I₂ = 1817, I₃ = 2745, I₄ = 11577.",
     energies: [578, 1817, 2745, 11577],
     question: "¿Cuál es la fórmula del cloruro más probable formado por 'Z'?",
     options: [

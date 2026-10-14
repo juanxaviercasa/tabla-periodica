@@ -1,3 +1,5 @@
+import { StudyImage } from "./components/StudyImage.jsx";
+import { readStoredValue, writeStoredValue } from "./utils/safeStorage.js";
 import { Component, lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import {
@@ -71,10 +73,8 @@ import {
   getElementPhaseAtTemp
 } from "./components/TemperatureSlider.jsx";
 import { ElementComparatorModal } from "./components/ElementComparatorModal.jsx";
-import { MisconceptionsGuideModal } from "./components/MisconceptionsGuideModal.jsx";
-import { ElementSpellerModal } from "./components/ElementSpellerModal.jsx";
-import { StudyGuideModal } from "./components/StudyGuideModal.jsx";
-import { LaminasViewerModal } from "./components/LaminasViewerModal.jsx";
+import { MisconceptionsGuideModal, ElementSpellerModal, StudyGuideModal, LaminasViewerModal } from "./components/DeferredModals.jsx";
+import { useModalDialog } from "./hooks/useModalDialog.js";
 import { communityUrl, whatsappCommunityUrl } from "./config.js";
 import {
   getBestScore,
@@ -121,6 +121,7 @@ function getElementTrendValue(element, propertyId) {
     case "ionization":
       return element.ionization ? parseFloat(element.ionization) : null;
     case "affinity":
+    case "electron_affinity":
       return element.electron_affinity !== null && element.electron_affinity !== undefined
         ? parseFloat(element.electron_affinity)
         : null;
@@ -137,7 +138,8 @@ function getElementTrendValue(element, propertyId) {
         ? parseFloat(element.density)
         : null;
     case "metallic":
-      return element.isMetal ? 100 : (element.family && element.family.includes("Metaloide") ? 50 : 10);
+    case "metallic_character":
+      return ["Alcalino", "Alcalinotérreo", "Transición", "Metal", "Lantánido", "Actínido"].includes(element.family) ? 100 : (element.family && element.family.includes("Metaloide") ? 50 : 10);
     default:
       return null;
   }
@@ -150,19 +152,19 @@ const examTrapDefinitions = {
     title: "Anomalías de Configuración Electrónica (Regla Antiserrucho)",
     elements: ["Cr", "Cu", "Mo", "Ag", "Au", "Pt", "Pd"],
     description:
-      "En exámenes de admisión (UNI/UNMSM) es pregunta obligada la configuración anómala: Cr (Z=24, [Ar] 4s¹ 3d⁵) y Cu (Z=29, [Ar] 4s¹ 3d¹⁰). Transfieren un electrón s a la subcapa d para lograr semi-llenado (d⁵) o llenado completo (d¹⁰), alcanzando máxima simetría cuántica y estabilidad de intercambio."
+      "Un ejercicio de configuración puede incluir las excepciones: Cr (Z=24, [Ar] 4s¹ 3d⁵) y Cu (Z=29, [Ar] 4s¹ 3d¹⁰). Transfieren un electrón s a la subcapa d para lograr semi-llenado (d⁵) o llenado completo (d¹⁰), alcanzando máxima simetría cuántica y estabilidad de intercambio."
   },
   anfoterismo: {
     title: "Elementos con Comportamiento Anfótero y Valencias Múltiples",
     elements: ["Cr", "Mn", "V", "N", "Bi", "Al", "Zn", "Pb", "Sn"],
     description:
-      "Trampa clásica de examen: estos elementos cambian drásticamente su función química según su estado de oxidación. Por ejemplo, el Manganeso (Mn) forma óxidos básicos con +2 y +3 (MnO, Mn₂O₃), es anfótero con +4 (MnO₂), y forma anhídridos ácidos con +6 y +7 (MnO₃, Mn₂O₇). El Cromo (Cr) actúa como metal con +2 y +3, y como no metal con +6 (anhídrido crómico CrO₃)."
+      "Trampa clásica de examen: estos elementos cambian drásticamente su función química según su estado de oxidación. Por ejemplo, el Manganeso (Mn) forma óxidos básicos con +2 y +3 (MnO, Mn₂O₃), es anfótero con +4 (MnO₂), y forma anhídridos ácidos con +6 y +7 (MnO₃, Mn₂O₇). El Cromo (Cr) forma óxidos básicos con +2, anfóteros con +3 y un óxido ácido con +6 (anhídrido crómico CrO₃); el elemento sigue siendo un metal."
   },
   "liquidos-gases": {
-    title: "Estados de Agregación No Sólidos a Condiciones Estándar (STP 25°C)",
+    title: "Estados de Agregación a 25 °C y 1 atm",
     elements: ["Hg", "Br", "H", "He", "N", "O", "F", "Ne", "Cl", "Ar", "Kr", "Xe", "Rn"],
     description:
-      "En toda la tabla periódica a 25°C y 1 atm solo existen 2 elementos líquidos: Mercurio (Hg, único metal líquido) y Bromo (Br, único no metal líquido). Solo existen 11 elementos gaseosos (los 6 gases nobles monoatómicos He, Ne, Ar, Kr, Xe, Rn más las moléculas diatómicas H₂, N₂, O₂, F₂, Cl₂). Todos los demás 105 elementos son sólidos."
+      "En toda la tabla periódica a 25°C y 1 atm solo existen 2 elementos líquidos: Mercurio (Hg, único metal líquido) y Bromo (Br, único no metal líquido). Solo existen 11 elementos gaseosos (los 6 gases nobles monoatómicos He, Ne, Ar, Kr, Xe, Rn más las moléculas diatómicas H₂, N₂, O₂, F₂, Cl₂). Muchos de los restantes son sólidos; algunos estados de elementos superpesados no se han medido y se basan en predicciones."
   },
   isoelectronicos: {
     title: "Especies Químicas Isoelectrónicas en Exámenes de Admisión",
@@ -178,9 +180,9 @@ const chemistryFacts = [
     tag: "Rareza Natural",
     category: "Metales Alcalinos",
     elements: ["Fr"],
-    title: "El elemento natural más escaso de la Tierra",
+    title: "Uno de los elementos naturales más escasos de la Tierra",
     text: "El Francio (Fr, Z=87) es tan inestable que se calcula que en toda la corteza terrestre solo existen entre 20 y 30 gramos en cualquier momento.",
-    examTip: "En exámenes nunca te pedirán reacciones químicas del Francio: todos sus isótopos son intensamente radiactivos (el ²²³Fr tiene una vida media de apenas 22 minutos)."
+    examTip: "Todos los isótopos del Francio son radiactivos (el ²²³Fr tiene una vida media de apenas 22 minutos)."
   },
   {
     id: "liquidos",
@@ -234,7 +236,7 @@ const chemistryFacts = [
     elements: ["Cr", "Cu"],
     title: "Las anomalías d⁴ y d⁹ (Regla del Antiserrucho)",
     text: "El Cromo (Cr, Z=24) y el Cobre (Cu, Z=29) rompen la regla de Aufbau estándar: terminan en 4s¹ 3d⁵ y 4s¹ 3d¹⁰ para lograr orbitales semillenos o llenos de menor energía.",
-    examTip: "¡Trampa fija en UNI y San Marcos! Escribir 4s² 3d⁴ para el Cr o 4s² 3d⁹ para el Cu te anula el problema de configuración electrónica."
+    examTip: "Para átomos neutros en estado fundamental, recuerda las excepciones: Cr termina en 4s¹ 3d⁵ y Cu en 4s¹ 3d¹⁰."
   },
   {
     id: "carbono",
@@ -269,7 +271,7 @@ const chemistryFacts = [
     category: "Halógenos",
     elements: ["At"],
     title: "Menos de 1 gramo en toda la corteza terrestre",
-    text: "El Ástato (At, Z=85) es el segundo elemento natural más escaso del planeta. Su desintegración radiactiva es tan veloz que nunca se ha visto a simple vista una masa macroscópica.",
+    text: "El Ástato (At, Z=85) es uno de los elementos naturales más escasos del planeta. Su desintegración radiactiva es tan veloz que nunca se ha visto a simple vista una masa macroscópica.",
     examTip: "Pertenece al grupo 17 (VIIA). Aunque se clasifica como halógeno, sus propiedades físicas evidencian un marcado carácter metálico por efecto relativista."
   },
   {
@@ -655,13 +657,8 @@ const FormatConfig = ({ configStr }) => {
 };
 
 function ElementModal({ element, onClose }) {
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [onClose]);
+  const dialogRef = useModalDialog(Boolean(element), onClose);
+
 
   if (!element) return null;
 
@@ -672,7 +669,7 @@ function ElementModal({ element, onClose }) {
     .replace(/[\u0300-\u036f]/g, "")}`;
 
   return (
-    <div className={`modal-overlay-3d ${familyClass}-bg`} onClick={onClose}>
+    <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Ficha de ${element.name}`} className={`modal-overlay-3d ${familyClass}-bg`} onClick={onClose}>
       <button className="modal-close-3d" onClick={onClose} aria-label="Cerrar">
         <X size={32} />
       </button>
@@ -680,7 +677,7 @@ function ElementModal({ element, onClose }) {
       <div className="modal-split-layout" onClick={(e) => e.stopPropagation()}>
         {/* Left Side: Hero Image & Information */}
         <div className={`modal-hero-side ${familyClass}-bg`}>
-          <img
+          <StudyImage
             src={`/real-elements/${element.symbol.toLowerCase()}.jpg`}
             alt={`Apariencia natural de ${element.name}`}
             className="hero-side-bg"
@@ -794,7 +791,7 @@ function Layout({ children }) {
   const navigate = useNavigate();
   const [streak, setStreak] = useState(getStudyStreak());
   const [darkMode, setDarkMode] = useState(
-    () => localStorage.getItem("quimica-preuni-theme") === "dark"
+    () => readStoredValue("quimica-preuni-theme") === "dark"
   );
   const [showSpellerModal, setShowSpellerModal] = useState(false);
   const [showLaminasModal, setShowLaminasModal] = useState(false);
@@ -823,7 +820,7 @@ function Layout({ children }) {
 
   useEffect(() => {
     document.documentElement.dataset.theme = darkMode ? "dark" : "light";
-    localStorage.setItem("quimica-preuni-theme", darkMode ? "dark" : "light");
+    writeStoredValue("quimica-preuni-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
   return (
@@ -855,7 +852,7 @@ function Layout({ children }) {
 
       <header className="site-header">
         <Link className="brand" to="/" aria-label="38 Elementos, inicio">
-          <img
+          <StudyImage
             src={darkMode ? "/logo-dark.svg" : "/logo.svg"}
             alt="38 Elementos · La tabla periódica que sí cae"
           />
@@ -905,7 +902,7 @@ function Layout({ children }) {
             <span className="speller-btn-text">Deletreo Químico</span>
           </button>
           <span className="streak">
-            <img
+            <StudyImage
               src="/visuals/student-avatar.jpg"
               alt="Estudiante"
               className="avatar"
@@ -1039,7 +1036,7 @@ function LaminasStudySection() {
               onClick={() => openLaminas(item.id)}
               title="Clic para abrir visor en pantalla completa con zoom"
             >
-              <img
+              <StudyImage
                 src={item.previewImg}
                 alt={item.title}
                 className="lamina-showcase-img"
@@ -1134,7 +1131,7 @@ function LaminasStudySection() {
 
 function Home() {
   const [tableMode, setTableMode] = useState(
-    () => localStorage.getItem("quimica-preuni-table-mode") || "study"
+    () => readStoredValue("quimica-preuni-table-mode") || "study"
   );
   const [studyDimOther, setStudyDimOther] = useState(true);
   const [query, setQuery] = useState("");
@@ -1189,7 +1186,7 @@ function Home() {
   };
 
   useEffect(() => {
-    localStorage.setItem("quimica-preuni-table-mode", tableMode);
+    writeStoredValue("quimica-preuni-table-mode", tableMode);
     const shell = document.querySelector(".app-shell");
     if (shell) {
       if (tableMode === "iupac") {
@@ -1369,6 +1366,10 @@ function Home() {
 
   return (
     <main>
+      <nav className="quick-table-access" aria-label="Acceso rápido a la tabla">
+        <a className="primary-action" href="#tabla-periodica" onClick={() => requestAnimationFrame(() => document.getElementById("tabla-periodica")?.focus({ preventScroll: true }))}><Atom size={18} /> Ver tabla periódica</a>
+        <span>Explora un elemento o busca su símbolo.</span>
+      </nav>
       <section className="learning-mode" aria-labelledby="mode-heading">
         <div>
           <span className="eyebrow">Aprendizaje adaptativo</span>
@@ -1393,27 +1394,27 @@ function Home() {
               Ver mi mapa
             </Link>
           )}
-          <Link className="primary-action" to={`/quiz/${nextTopic.id}`}>
+          <Link className="primary-action" to={`/quiz/${nextTopic.id}${dueReviews > 0 ? "?mode=review" : ""}`}>
             <ListChecks size={16} /> {dueReviews > 0 ? "Repasar ahora" : "Continuar ruta"}
           </Link>
         </div>
       </section>
 
       <section className="pathways" aria-label="Rutas de aprendizaje">
-        <Link to={`/quiz/${nextTopic.id}`}>
-          <img src="/visuals/path-exam.jpg" alt="" loading="lazy" className="path-img" />
+        <Link to={`/quiz/${nextTopic.id}${dueReviews > 0 ? "?mode=review" : ""}`}>
+          <StudyImage src="/visuals/path-exam.jpg" alt="" loading="lazy" className="path-img" />
           <span className="eyebrow">Ruta Examen</span>
           <strong>Practica con foco</strong>
           <small>Preguntas, valencias y velocidad para tu próxima evaluación.</small>
         </Link>
         <Link to="/laboratorio">
-          <img src="/visuals/path-understanding.jpg" alt="" loading="lazy" className="path-img" />
+          <StudyImage src="/visuals/path-understanding.jpg" alt="" loading="lazy" className="path-img" />
           <span className="eyebrow">Ruta Comprensión</span>
           <strong>Laboratorio PhET</strong>
           <small>Construye átomos, iones e isótopos con masa ponderada real.</small>
         </Link>
         <Link to="/docentes">
-          <img src="/visuals/teacher-learning-map.jpg" alt="" loading="lazy" className="path-img" />
+          <StudyImage src="/visuals/teacher-learning-map.jpg" alt="" loading="lazy" className="path-img" />
           <span className="eyebrow">Para acompañar</span>
           <strong>Vista docente</strong>
           <small>Observa progreso y conceptos que necesitan intervención.</small>
@@ -1445,7 +1446,7 @@ function Home() {
 
       {/* Hero Section adaptative to tableMode */}
       <section className="hero">
-        <img
+        <StudyImage
           src="/visuals/hero-periodic-map.jpg"
           alt="Mapa de la tabla periódica"
           className="hero-img"
@@ -1459,8 +1460,8 @@ function Home() {
               </div>
               <h1>Esto es lo que necesitas memorizar.</h1>
               <p>
-                Los 38 elementos marcados son los que sí caen en el examen. Los otros 80 están en
-                gris: no pierdas tiempo con ellos.
+                Empieza por estos 38 elementos priorizados para practicar. Los otros 80 están en
+                gris y puedes explorarlos en el modo IUPAC completo.
               </p>
             </>
           ) : (
@@ -1488,7 +1489,7 @@ function Home() {
               : `Has completado ${completedTopics} de ${topics.length} temas. Tu siguiente paso es ${nextTopic.title}.`}
           </p>
         </div>
-        <Link className="primary-action" to={`/quiz/${nextTopic.id}`}>
+        <Link className="primary-action" to={`/quiz/${nextTopic.id}${dueReviews > 0 ? "?mode=review" : ""}`}>
           <ListChecks size={16} aria-hidden="true" />{" "}
           {completedTopics === topics.length ? "Repasar de nuevo" : "Continuar ruta"}
         </Link>
@@ -1499,7 +1500,7 @@ function Home() {
           <span style={{ width: `${(completedTopics / topics.length) * 100}%` }} />
         </div>
         {completedTopics === topics.length && (
-          <img
+          <StudyImage
             src="/visuals/module-certificate.jpg"
             alt="Certificado de completitud"
             className="certificate-img"
@@ -1508,7 +1509,7 @@ function Home() {
         )}
       </section>
 
-      <section className={`table-section mode-${tableMode}`} aria-labelledby="table-heading">
+      <section id="tabla-periodica" tabIndex={-1} className={`table-section mode-${tableMode}`} aria-labelledby="table-heading">
         <FactCarousel />
         <h2 id="table-heading" className="sr-only">
           Tabla periódica interactiva
@@ -2237,6 +2238,7 @@ function Home() {
         {topics.map((topic) => {
           const best = getBestScore(topic.id);
           const mistakes = getMistakes(topic.id);
+          const scheduled = getDueQuestions(topic.id);
           return (
             <article className={`topic ${openTopic === topic.id ? "expanded" : ""}`} key={topic.id}>
               <button
@@ -2274,6 +2276,7 @@ function Home() {
                         {mistakes.length === 1 ? "" : "es"}
                       </Link>
                     )}
+                    {scheduled.length > 0 && <Link className="secondary-action" to={`/quiz/${topic.id}?mode=review`}>Repaso programado · {scheduled.length} preguntas</Link>}
                   </div>
                 </div>
               )}
@@ -2415,6 +2418,7 @@ function App() {
   // Global shortcut '?' or 'h'
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.target?.closest?.('[role="dialog"]')) return;
       if (
         e.target &&
         (e.target.tagName === "INPUT" ||
@@ -2435,7 +2439,7 @@ function App() {
   const handleExecuteGuideAction = (actionType) => {
     switch (actionType) {
       case "study-mode":
-        localStorage.setItem("quimica-preuni-table-mode", "study");
+        writeStoredValue("quimica-preuni-table-mode", "study");
         navigate("/");
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent("set-table-mode", { detail: "study" }));
@@ -2445,9 +2449,9 @@ function App() {
         navigate("/laboratorio");
         break;
       case "navigate-lab-jump":
-        navigate("/laboratorio?tab=jump");
+        navigate("/laboratorio?tab=ionization");
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent("switch-lab-tab", { detail: "jump" }));
+          window.dispatchEvent(new CustomEvent("switch-lab-tab", { detail: "ionization" }));
         }, 100);
         break;
       case "tool-temperature":

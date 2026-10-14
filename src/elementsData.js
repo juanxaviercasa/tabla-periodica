@@ -10,7 +10,7 @@ export const preuniZList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1
 export const preuniCategories = [
   { id: "all", label: "Los 38", count: 38 },
   { id: "basic", label: "Básicos", count: 20 },
-  { id: "variable", label: "Valencia variable", count: 7 },
+  { id: "variable", label: "7 del bloque d", count: 7 },
   { id: "loose", label: "Sueltos", count: 11 }
 ];
 
@@ -4235,7 +4235,9 @@ for (const el of elements118) {
   if (extra) {
     el.melt = extra.melt;
     el.boil = extra.boil;
-    el.density = extra.density;
+    // The source catalog gives gas densities in g/L; all UI comparisons use
+    // g/cm³. Keep the source temperature/pressure rather than implying 293 K.
+    el.density = extra.density !== null && el.phase === "gas" ? extra.density / 1000 : extra.density;
     el.electron_affinity = extra.electron_affinity;
   }
   const ionList = ionizationData[el.z];

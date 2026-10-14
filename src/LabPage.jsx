@@ -23,9 +23,11 @@ import {
 import { elements118 } from "./data.js";
 import { isotopesData } from "./data/isotopesData.js";
 import { misconceptionsData } from "./data/misconceptionsData.js";
-import { MisconceptionsGuideModal } from "./components/MisconceptionsGuideModal.jsx";
+import { MisconceptionsGuideModal } from "./components/DeferredModals.jsx";
 import { AtomicBohrVisualizer } from "./components/AtomicBohrVisualizer.jsx";
 import { IonizationQuantumJumpWidget } from "./components/IonizationQuantumJumpWidget.jsx";
+import { getShellDistribution, getNuclearStability, normalizeLabTab } from "./data/atomicCalculations.js";
+import { updateAbundance } from "./data/isotopeCalculations.js";
 
 // Pre-university admission challenge list for active inquiry
 const admissionChallenges = [
@@ -50,7 +52,7 @@ const admissionChallenges = [
     title: "Radioisótopo Carbono-14",
     prompt: "Construye el isótopo inestable de Carbono-14 (¹⁴₆C): 6 protones, 8 neutrones y 6 electrones neutros.",
     target: { p: 6, n: 8, e: 6 },
-    concept: "Inestabilidad nuclear: N/Z = 8/6 = 1.33 excede la estabilidad ligera (N/Z=1), emitiendo radiación beta (β⁻).",
+    concept: "El carbono-14 es un radioisótopo registrado que emite radiación beta (β⁻). La relación N/Z orienta, pero no determina por sí sola la estabilidad.",
     exam: "Química Nuclear UNI"
   },
   {
@@ -63,10 +65,10 @@ const admissionChallenges = [
   },
   {
     id: 5,
-    title: "Partícula Alfa Neutra (Helio-4)",
+    title: "Átomo Neutro de Helio-4",
     prompt: "Construye el átomo neutro de Helio-4 (⁴₂He): 2 protones, 2 neutrones y 2 electrones.",
     target: { p: 2, n: 2, e: 2 },
-    concept: "Estabilidad máxima nuclear: núcleo par-par con N=2 y Z=2 (números mágicos de nucleones).",
+    concept: "El helio-4 es estable. Una partícula alfa es su núcleo (2 protones y 2 neutrones), sin los 2 electrones del átomo neutro.",
     exam: "Física y Química Nuclear"
   }
 ];
@@ -80,51 +82,18 @@ const presets = [
   { name: "Hierro-56", symbol: "Fe", p: 26, n: 30, e: 26 }
 ];
 
-// Evaluates nuclear stability based on N/Z band of stability
-function evaluateNuclearStability(p, n) {
-  if (p === 0) return { stable: false, ratio: 0, reason: "Sin protones en el núcleo" };
-  if (p === 1 && n === 0) return { stable: true, ratio: 0, reason: "Protio estable (único núcleo sin neutrones)" };
-  if (p === 1 && n === 1) return { stable: true, ratio: 1.0, reason: "Deuterio estable" };
-  if (p === 1 && n >= 2) return { stable: false, ratio: n / p, reason: "Tritio inestable (emisión β⁻)" };
-
-  const ratio = n / p;
-
-  if (p <= 20) {
-    if (ratio >= 0.95 && ratio <= 1.15) {
-      return { stable: true, ratio, reason: "Cinturón de estabilidad: N/Z ≈ 1.0 para núcleos ligeros (Z ≤ 20)" };
-    } else if (ratio > 1.15) {
-      return { stable: false, ratio, reason: "Inestable por exceso de neutrones (desintegración por emisión β⁻)" };
-    } else {
-      return { stable: false, ratio, reason: "Inestable por déficit de neutrones (desintegración por emisión β⁺ o captura electrónica)" };
-    }
-  } else {
-    if (ratio >= 1.15 && ratio <= 1.55) {
-      return { stable: true, ratio, reason: "Cinturón de estabilidad: N/Z ≈ 1.25 a 1.50 para núcleos medianos y pesados" };
-    } else if (ratio > 1.55) {
-      return { stable: false, ratio, reason: "Inestable por exceso de neutrones (emisor beta β⁻)" };
-    } else {
-      return { stable: false, ratio, reason: "Inestable por exceso de protones (emisor alfa α o captura e⁻)" };
-    }
-  }
-}
-
 export default function LabPage() {
   const [searchParams] = useSearchParams();
   const querySym = searchParams.get("sym") || searchParams.get("elemento");
   const queryTab = searchParams.get("tab");
 
-  const initialTab =
-    queryTab === "isotopes"
-      ? "isotopes"
-      : queryTab === "jump" || queryTab === "ionizations"
-      ? "jump"
-      : "builder";
+  const initialTab = normalizeLabTab(queryTab);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showMisconceptionsModal, setShowMisconceptionsModal] = useState(false);
 
   useEffect(() => {
     const handleSwitch = (e) => {
-      if (e.detail) setActiveTab(e.detail);
+      if (e.detail) setActiveTab(normalizeLabTab(e.detail));
     };
     window.addEventListener("switch-lab-tab", handleSwitch);
     return () => window.removeEventListener("switch-lab-tab", handleSwitch);
@@ -152,22 +121,10 @@ export default function LabPage() {
 
   // Nuclear stability
   const stabilityInfo = useMemo(() => {
-    return evaluateNuclearStability(protons, neutrons);
+    return getNuclearStability(protons, neutrons);
   }, [protons, neutrons]);
 
-  // Shell electron distribution (Bohr rule 2, 8, 18, 32...)
-  const shellDistribution = useMemo(() => {
-    let remaining = electrons;
-    const maxCaps = [2, 8, 18, 32, 50, 72, 98];
-    const shells = [];
-    for (let cap of maxCaps) {
-      if (remaining <= 0) break;
-      const fill = Math.min(remaining, cap);
-      shells.push(fill);
-      remaining -= fill;
-    }
-    return shells.length > 0 ? shells : [0];
-  }, [electrons]);
+  const shellDistribution = useMemo(() => getShellDistribution(currentElement, electrons), [currentElement, electrons]);
 
   // Current Challenge check
   const currentChallenge = admissionChallenges[activeChallengeIdx];
@@ -178,13 +135,7 @@ export default function LabPage() {
   }, [currentChallenge, protons, neutrons, electrons]);
 
   useEffect(() => {
-    if (queryTab === "isotopes") {
-      setActiveTab("isotopes");
-    } else if (queryTab === "builder") {
-      setActiveTab("builder");
-    } else if (queryTab === "ionization") {
-      setActiveTab("ionization");
-    }
+    setActiveTab(normalizeLabTab(queryTab));
 
     if (querySym) {
       const match = elements118.find(
@@ -252,13 +203,7 @@ export default function LabPage() {
   }, [isotopeData, currentAbundances]);
 
   const handleAbundanceChange = (idx, newPct) => {
-    const nextValues = [...currentAbundances];
-    const otherIdx = idx === 0 ? 1 : 0;
-    const clampedNew = Math.max(0, Math.min(100, parseFloat(newPct) || 0));
-    nextValues[idx] = clampedNew;
-    if (isotopeData.isotopes.length === 2) {
-      nextValues[otherIdx] = parseFloat((100 - clampedNew).toFixed(2));
-    }
+    const nextValues = updateAbundance(currentAbundances, idx, newPct);
     setCustomAbundance({
       symbol: selectedIsoSym,
       values: nextValues
@@ -404,7 +349,8 @@ export default function LabPage() {
               </div>
 
               {/* Nuclear Stability Indicator Bar */}
-              <div className={`nuclear-stability-card ${stabilityInfo.stable ? "stable-box" : "unstable-box"}`}>
+              <p className="model-note">Modelo didáctico por capas: parte de la configuración del átomo neutro y retira primero los electrones del mayor nivel. Las especies construidas no necesariamente existen como iones estables.</p>
+              <div className={`nuclear-stability-card ${stabilityInfo.stable === null ? "unknown-box" : stabilityInfo.stable ? "stable-box" : "unstable-box"}`}>
                 <div className="stability-header-row">
                   <div className="stability-title">
                     {stabilityInfo.stable ? (
@@ -412,11 +358,12 @@ export default function LabPage() {
                     ) : (
                       <AlertTriangle size={17} className="text-crimson" />
                     )}
-                    <strong>{stabilityInfo.stable ? "Núcleo Estable" : "Núcleo Radiactivo / Inestable"}</strong>
+                    <strong>{stabilityInfo.stable === null ? "Estabilidad no determinada" : stabilityInfo.stable ? "Núcleo Estable" : "Núcleo Radiactivo / Inestable"}</strong>
                   </div>
                   <span className="ratio-tag">Relación N/Z = {stabilityInfo.ratio.toFixed(2)}</span>
                 </div>
                 <p>{stabilityInfo.reason}</p>
+                {stabilityInfo.source && <a href={stabilityInfo.source} target="_blank" rel="noreferrer">Consultar datos del núclido</a>}
               </div>
 
               {/* Ionic Radius Rationale Box (Chemical Misconception Solved) */}
@@ -467,7 +414,7 @@ export default function LabPage() {
                 <div className="particle-stepper-row row-neutrons">
                   <div className="stepper-label-group">
                     <strong>Neutrones (n⁰)</strong>
-                    <small>Define el isótopo y masa atómica (A)</small>
+                    <small>Define el isótopo y número de masa (A)</small>
                   </div>
                   <div className="stepper-buttons-group">
                     <button
@@ -535,6 +482,7 @@ export default function LabPage() {
                   <span className="presets-label">O selecciona cualquier elemento (1 al 118):</span>
                   <select
                     id="lab-full-element-select"
+                    aria-label="Elemento del constructor"
                     className="lab-element-select"
                     value={currentElement?.symbol || ""}
                     onChange={(e) => loadElement(e.target.value)}
@@ -680,6 +628,7 @@ export default function LabPage() {
 
                       <input
                         type="range"
+                        aria-label={`Abundancia de ${iso.name}`}
                         min="0"
                         max="100"
                         step="0.01"
@@ -709,7 +658,7 @@ export default function LabPage() {
                   <small className="readout-status">
                     {customAbundance
                       ? "⚠️ Valor simulado alterado por el usuario"
-                      : `✅ Valor oficial de la tabla periódica (${isotopeData.standard_mass} u)`}
+                      : `Promedio de los isótopos listados. Referencia de la tabla: ${isotopeData.standard_mass} u (puede diferir por redondeo).`}
                   </small>
                 </div>
               </div>

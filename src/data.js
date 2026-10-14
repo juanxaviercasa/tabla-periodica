@@ -45,7 +45,7 @@ const microLessons = {
     objective: "Construir el mapa mínimo de elementos para el examen.",
     points: [
       "Los primeros 20 elementos son la base del recorrido.",
-      "Los 7 de transición concentran las valencias variables.",
+      "El grupo de estudio del bloque d reúne Cr, Mn, Fe, Co, Ni, Cu y Zn; el Zn tiene estado de oxidación habitual +2.",
       "Los 11 sueltos se estudian como un grupo de alta rentabilidad."
     ],
     images: ["alkali-metals.jpg", "halogens-noble-gases.jpg"]

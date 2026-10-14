@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useModalDialog } from "../hooks/useModalDialog.js";
+import React, { useState } from "react";
 import {
   X,
   ShieldAlert,
@@ -19,24 +20,12 @@ import { misconceptionsData } from "../data/misconceptionsData.js";
 import { communityUrl } from "../config.js";
 
 export function MisconceptionsGuideModal({ isOpen, onClose }) {
+  const dialogRef = useModalDialog(isOpen, onClose);
   const [selectedMisconceptionId, setSelectedMisconceptionId] = useState(
     misconceptionsData[0].id
   );
   const [revealedAnswers, setRevealedAnswers] = useState({});
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -57,7 +46,7 @@ export function MisconceptionsGuideModal({ isOpen, onClose }) {
     <div
       className="misconceptions-modal-overlay"
       onClick={onClose}
-      role="dialog"
+      ref={dialogRef} tabIndex={-1} role="dialog"
       aria-modal="true"
       aria-labelledby="misconceptions-modal-title"
     >

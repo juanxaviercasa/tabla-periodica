@@ -1,6 +1,9 @@
-import React, { Suspense, lazy, useState, useEffect } from "react";
+import { StudyImage } from "./StudyImage.jsx";
+import { useModalDialog } from "../hooks/useModalDialog.js";
+import React, { Suspense, lazy, useState } from "react";
 import { X, ArrowLeftRight, Check, Zap, Flame, Droplets, Wind, Scale, HelpCircle, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getBondGuidance } from "../data/bondGuidance.js";
 
 const AtomViewer3D = lazy(() => import("./AtomViewer3D.jsx"));
 
@@ -10,15 +13,9 @@ export function ElementComparatorModal({
   onClearAll,
   onClose
 }) {
+  const dialogRef = useModalDialog(Boolean(compareElements?.length), onClose);
   const [active3dAtom, setActive3dAtom] = useState(0); // 0 for Element A, 1 for Element B
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
 
   if (!compareElements || compareElements.length === 0) return null;
 
@@ -30,34 +27,11 @@ export function ElementComparatorModal({
   const enB = elemB && elemB.en && elemB.en !== "—" ? parseFloat(elemB.en) : null;
 
   let deltaEn = null;
-  let bondPrediction = null;
-
-  if (enA !== null && enB !== null) {
-    deltaEn = Math.abs(enA - enB).toFixed(2);
-    const d = parseFloat(deltaEn);
-    if (d >= 1.7) {
-      bondPrediction = {
-        type: "Enlace Iónico Predominante",
-        desc: "Fuerte transferencia de electrones; alta diferencia de electronegatividad (ΔEN ≥ 1.7). Típico entre un metal muy electropositivo y un no metal.",
-        badgeClass: "bond-ionic"
-      };
-    } else if (d > 0.4) {
-      bondPrediction = {
-        type: "Enlace Covalente Polar",
-        desc: "Compartición asimétrica de pares electrónicos (0.4 < ΔEN < 1.7); formación de dipolos eléctricos permanentes.",
-        badgeClass: "bond-polar"
-      };
-    } else {
-      bondPrediction = {
-        type: "Enlace Covalente Apolar",
-        desc: "Compartición prácticamente equitativa de la nube de valencia (ΔEN ≤ 0.4); nube electrónica simétrica.",
-        badgeClass: "bond-apolar"
-      };
-    }
-  }
+  const bondPrediction = getBondGuidance(elemA, elemB);
+  if (enA !== null && enB !== null) deltaEn = Math.abs(enA - enB).toFixed(2);
 
   return (
-    <div className="comparator-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+    <div className="comparator-modal-overlay" onClick={onClose} ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Comparador de elementos">
       <div className="comparator-modal-sheet" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="comparator-modal-header">
@@ -115,7 +89,7 @@ export function ElementComparatorModal({
 
               <div className="card-hero-row">
                 <div className="card-specimen-thumbnail">
-                  <img
+                  <StudyImage
                     src={`/real-elements/${elemA.symbol.toLowerCase()}.jpg`}
                     alt={`Muestra de ${elemA.name}`}
                     onError={(e) => { e.target.style.display = "none"; }}
@@ -180,7 +154,7 @@ export function ElementComparatorModal({
 
                 <div className="card-hero-row">
                   <div className="card-specimen-thumbnail">
-                    <img
+                    <StudyImage
                       src={`/real-elements/${elemB.symbol.toLowerCase()}.jpg`}
                       alt={`Muestra de ${elemB.name}`}
                       onError={(e) => { e.target.style.display = "none"; }}

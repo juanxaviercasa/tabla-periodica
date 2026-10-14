@@ -10,9 +10,16 @@
  * @returns {"solid" | "liquid" | "gas" | "unknown"}
  */
 export function getElementPhaseAtTemp(element, tempK) {
-  if (!element) return "unknown";
+  if (!element || !Number.isFinite(tempK) || tempK < 0) return "unknown";
   const melt = element.melt !== null && element.melt !== undefined ? Number(element.melt) : null;
   const boil = element.boil !== null && element.boil !== undefined ? Number(element.boil) : null;
+
+  // At approximately 1 atm helium stays liquid below its boiling point;
+  // carbon and arsenic sublime rather than passing through a liquid phase.
+  // RSC fact boxes: He, C (4098 K), As (889 K).
+  if (element.symbol === "He") return tempK >= 4.222 ? "gas" : "liquid";
+  if (element.symbol === "C") return tempK >= 4098 ? "gas" : "solid";
+  if (element.symbol === "As") return tempK >= 889 ? "gas" : "solid";
 
   if (melt === null && boil === null) {
     return "unknown"; // Synthetic / unknown transuranic

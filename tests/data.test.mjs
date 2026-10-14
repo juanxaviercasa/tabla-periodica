@@ -316,28 +316,28 @@ test("validates NIST successive ionization energies dataset and quantum jump cal
 
   // Test quantum jump identification for representative elements
   // 1. Sodium (Na, Z=11): Jump at I1 -> I2 (valence = 1, Group 1)
-  const naJump = calculateQuantumJump(ionizationData[11]);
+  const naJump = calculateQuantumJump(ionizationData[11], { representative: true });
   assert.equal(naJump.valenceElectrons, 1);
   assert.ok(naJump.maxRatio >= 5.0, "Na I2/I1 ratio should be > 5.0");
   assert.equal(naJump.prediction.group, "Grupo 1 (IA)");
   assert.equal(naJump.prediction.ion, "X⁺");
 
   // 2. Magnesium (Mg, Z=12): Jump at I2 -> I3 (valence = 2, Group 2)
-  const mgJump = calculateQuantumJump(ionizationData[12]);
+  const mgJump = calculateQuantumJump(ionizationData[12], { representative: true });
   assert.equal(mgJump.valenceElectrons, 2);
   assert.ok(mgJump.maxRatio >= 4.0, "Mg I3/I2 ratio should be > 4.0");
   assert.equal(mgJump.prediction.group, "Grupo 2 (IIA)");
   assert.equal(mgJump.prediction.ion, "X²⁺");
 
   // 3. Aluminum (Al, Z=13): Jump at I3 -> I4 (valence = 3, Group 13)
-  const alJump = calculateQuantumJump(ionizationData[13]);
+  const alJump = calculateQuantumJump(ionizationData[13], { representative: true });
   assert.equal(alJump.valenceElectrons, 3);
   assert.ok(alJump.maxRatio >= 3.5, "Al I4/I3 ratio should be > 3.5");
   assert.equal(alJump.prediction.group, "Grupo 13 (IIIA)");
   assert.equal(alJump.prediction.ion, "X³⁺");
 
   // 4. Silicon (Si, Z=14): Jump at I4 -> I5 (valence = 4, Group 14)
-  const siJump = calculateQuantumJump(ionizationData[14]);
+  const siJump = calculateQuantumJump(ionizationData[14], { representative: true });
   assert.equal(siJump.valenceElectrons, 4);
   assert.ok(siJump.maxRatio >= 3.0, "Si I5/I4 ratio should be > 3.0");
   assert.equal(siJump.prediction.group, "Grupo 14 (IVA)");

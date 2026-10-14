@@ -1,3 +1,4 @@
+import { StudyImage } from "./components/StudyImage.jsx";
 import { useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight, CheckCircle, RotateCcw, Sparkles, Target } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -25,6 +26,7 @@ export default function DiagnosticPage() {
   const [finished, setFinished] = useState(Boolean(getDiagnostic()));
   const [selected, setSelected] = useState(null);
   const [result, setResult] = useState(getDiagnostic());
+  const [persisted, setPersisted] = useState(true);
   const question = questions[index];
 
   const finish = (nextAnswers) => {
@@ -34,7 +36,7 @@ export default function DiagnosticPage() {
     }), {});
     const score = nextAnswers.reduce((total, answer, questionIndex) => total + (answer === questions[questionIndex].answer ? 1 : 0), 0);
     const diagnostic = { score, total: questions.length, topicScores, recommendedMode: score < 3 ? "comprension" : "examen" };
-    saveDiagnostic(diagnostic);
+    setPersisted(saveDiagnostic(diagnostic));
     setResult(diagnostic);
     setFinished(true);
   };
@@ -52,7 +54,8 @@ export default function DiagnosticPage() {
     const recommendedMode = result.recommendedMode === "comprension" ? "Ruta Comprensión" : "Ruta Examen";
     const recommendedTopic = result.score < 3 ? topics[0] : topics[1];
     return <main className="diagnostic-page">
-      <div className="diagnostic-hero"><img src="/visuals/diagnostic-compass.jpg" alt="" className="hero-img" loading="lazy" /><div className="hero-content"><span className="eyebrow">Tu punto de partida</span><h1>Ya sabemos por dónde empezar.</h1><p>El diagnóstico no es una nota: es un mapa para que estudies con menos fricción y mejores repasos.</p></div></div>
+      {!persisted && <p className="storage-notice" role="status">Tu navegador no pudo guardar el diagnóstico. Puedes continuar; se conservará durante esta sesión.</p>}
+      <div className="diagnostic-hero"><StudyImage src="/visuals/diagnostic-compass.jpg" alt="" className="hero-img" loading="lazy" /><div className="hero-content"><span className="eyebrow">Tu punto de partida</span><h1>Ya sabemos por dónde empezar.</h1><p>El diagnóstico no es una nota: es un mapa para que estudies con menos fricción y mejores repasos.</p></div></div>
       <section className="diagnostic-result"><div className="diagnostic-score"><strong>{result.score}/{result.total}</strong><span>conceptos reconocidos</span></div><h2>Te recomendamos {recommendedMode}.</h2><p>{result.score < 3 ? "Conviene reforzar los modelos básicos antes de acelerar hacia el examen." : "Ya tienes una base funcional. Puedes practicar con foco y volver a profundizar cuando aparezca un error."}</p><div className="diagnostic-actions"><Link className="primary-action" to={`/quiz/${recommendedTopic.id}`}><ArrowRight size={16} /> Empezar por {recommendedTopic.title}</Link><button className="secondary-action" onClick={restart}><RotateCcw size={16} /> Repetir diagnóstico</button></div></section>
       <section className="diagnostic-breakdown">
         <h2>Mapa de competencias</h2>
@@ -96,5 +99,5 @@ export default function DiagnosticPage() {
     </main>;
   }
 
-  return <main className="diagnostic-page"><div className="diagnostic-hero"><img src="/visuals/diagnostic-compass.jpg" alt="" className="hero-img" loading="lazy" /><div className="hero-content"><span className="eyebrow">Diagnóstico inicial · {index + 1}/{questions.length}</span><h1>Descubre qué necesitas estudiar primero.</h1><p>Responde seis preguntas sin buscar. Aquí medimos tu punto de partida, no tu memoria perfecta.</p></div></div><section className="diagnostic-question"><div className="diagnostic-question-meta"><span>{question.topicTitle}</span><span>{index + 1} de {questions.length}</span></div><h2>{question.prompt}</h2><div className="options">{question.options.map((option, optionIndex) => <button key={option} className={selected === optionIndex ? "selected" : ""} onClick={() => setSelected(optionIndex)} aria-pressed={selected === optionIndex}>{option}</button>)}</div><button className="primary-action next-button" disabled={selected === null} onClick={answer}>{index === questions.length - 1 ? "Ver mi mapa" : "Siguiente"} <ArrowRight size={16} /></button></section><p className="diagnostic-note"><CheckCircle size={15} /> Puedes cambiar de respuesta antes de continuar.</p></main>;
+  return <main className="diagnostic-page"><div className="diagnostic-hero"><StudyImage src="/visuals/diagnostic-compass.jpg" alt="" className="hero-img" loading="lazy" /><div className="hero-content"><span className="eyebrow">Diagnóstico inicial · {index + 1}/{questions.length}</span><h1>Descubre qué necesitas estudiar primero.</h1><p>Responde seis preguntas sin buscar. Aquí medimos tu punto de partida, no tu memoria perfecta.</p></div></div><section className="diagnostic-question"><div className="diagnostic-question-meta"><span>{question.topicTitle}</span><span>{index + 1} de {questions.length}</span></div><h2>{question.prompt}</h2><div className="options">{question.options.map((option, optionIndex) => <button key={option} className={selected === optionIndex ? "selected" : ""} onClick={() => setSelected(optionIndex)} aria-pressed={selected === optionIndex}>{option}</button>)}</div><button className="primary-action next-button" disabled={selected === null} onClick={answer}>{index === questions.length - 1 ? "Ver mi mapa" : "Siguiente"} <ArrowRight size={16} /></button></section><p className="diagnostic-note"><CheckCircle size={15} /> Puedes cambiar de respuesta antes de continuar.</p></main>;
 }
