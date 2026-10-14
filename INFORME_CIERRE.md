@@ -6,7 +6,7 @@ Fecha: 14 de octubre de 2026.
 
 Se implementaron las siete correcciones del informe inicial y las mejoras de carga de imágenes, vista previa al compartir, accesibilidad de modales, almacenamiento resistente y textos educativos. También se corrigieron problemas adicionales encontrados durante la comprobación.
 
-Los cambios están en el proyecto local. No se publicó ni se modificó el sitio desplegado.
+Los cambios se subieron a main del repositorio y activaron el workflow de GitHub Pages.
 
 ## Correcciones principales
 
@@ -52,7 +52,7 @@ En una muestra de Chrome a 390 × 844, con red simulada de 1,6 Mbps, 150 ms de l
 
 - **27 pruebas automáticas aprobadas**, incluidas regresiones de los casos científicos y del progreso.
 - **Compilación de producción exitosa.**
-- **9 escenarios de navegador aprobados** sobre el proyecto compilado: rutas móviles, ionización, constructor, repaso completo, guía y foco, diagnóstico, otros modales, carga móvil simulada y almacenamiento bloqueado.
+- **10 escenarios de navegador aprobados** sobre el proyecto compilado: rutas móviles, ionización, constructor, repaso completo, guía y foco, diagnóstico, otros modales, carga móvil simulada y almacenamiento bloqueado.
 - Comprobación a 390 × 844: sin desbordamiento horizontal del documento en las rutas revisadas.
 - Capturas de inicio móvil, escritorio y laboratorio guardadas en `.review-output/`.
 
@@ -71,3 +71,10 @@ Como mejora secundaria, los botones de copiar pueden esperar la confirmación de
 ## Criterio de cierre
 
 Las correcciones iniciales están implementadas y verificadas. Para cerrar la entrega publicada, haría una prueba real desde redes sociales y una revisión editorial de las fichas que se usarán en clase. No considero necesario seguir agregando funcionalidades. La trazabilidad completa del catálogo y las mejoras de recorrido pueden organizarse como mantenimiento acotado.
+
+## Seguimiento de prioridades
+
+- Acceso móvil implementado: botón inicial «Ver tabla periódica», enlace /#tabla-periodica y traslado del foco.
+- Referencias implementadas en las 118 fichas por propiedad. Se identifican datos orientativos, condiciones no conservadas y propiedades predichas; no se afirma una verificación individual inexistente. La auditoría valor por valor queda como mantenimiento.
+- Commit y push a main completados, integrando los dos commits remotos de documentación.
+- Se probaron enlaces públicos con parámetros de Instagram y TikTok en Chrome móvil simulado. Esto no sustituye una prueba dentro de las aplicaciones sociales en teléfonos reales.
