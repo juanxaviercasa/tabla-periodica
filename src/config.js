@@ -4,3 +4,4 @@ export const appConfig = {
 };
 
 export const communityUrl = "https://www.skool.com/academia-zenit-3587/about";
+export const chemistryCourseUrl = "https://quimica.sistemazenit.com/";
