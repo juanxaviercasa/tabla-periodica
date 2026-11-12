@@ -13385,3 +13385,109 @@ button { cursor: pointer; } a { color: inherit; }
 
 /* Preserve the data color against the base card background overrides. */
 #tabla-periodica .periodic-grid.is-heatmap-active .element:not(.has-no-heatmap-data) { background: var(--element-heatmap-color) !important; }
+
+
+/* Química Zenit: continuation CTA below the interactive table.
+   Preserve the table as the primary learning tool, without adding to its navigation. */
+.table-community-cta.course-bridge {
+  align-items: center;
+  gap: clamp(20px, 3vw, 36px);
+  padding: clamp(20px, 2.6vw, 30px);
+  background: linear-gradient(125deg, rgba(107,45,140,.10), rgba(107,45,140,.035));
+  border: 1px solid rgba(107,45,140,.22);
+}
+.course-bridge-copy {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.table-community-cta.course-bridge h2 {
+  line-height: 1.22;
+  text-wrap: balance;
+}
+.table-community-cta.course-bridge p {
+  max-width: 630px;
+}
+.course-bridge-actions {
+  flex: 0 0 300px;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  justify-items: stretch;
+}
+.course-bridge-primary,
+.course-bridge-secondary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 11px 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-decoration: none;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+.course-bridge-primary {
+  color: #fff;
+  background: #6b2d8c;
+  border: 1px solid #6b2d8c;
+}
+.course-bridge-primary:hover {
+  background: #552370;
+  border-color: #552370;
+}
+.course-bridge-secondary {
+  color: #61267f;
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(107,45,140,.32);
+}
+.course-bridge-secondary:hover {
+  color: #48175f;
+  background: #fff;
+  border-color: #6b2d8c;
+}
+.course-bridge-actions a:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
+}
+.course-bridge-actions svg { flex: 0 0 auto; }
+[data-theme="dark"] .table-community-cta.course-bridge {
+  background: linear-gradient(125deg, rgba(139,77,176,.17), rgba(139,77,176,.06));
+  border-color: rgba(190,231,215,.22);
+}
+[data-theme="dark"] .course-bridge-primary {
+  background: #8541a7;
+  border-color: #8541a7;
+  color: #fff;
+}
+[data-theme="dark"] .course-bridge-primary:hover {
+  background: #9b56bc;
+  border-color: #9b56bc;
+}
+[data-theme="dark"] .course-bridge-secondary {
+  background: rgba(255,255,255,.06);
+  color: #e9cbfa;
+  border-color: rgba(233,203,250,.45);
+}
+[data-theme="dark"] .course-bridge-secondary:hover {
+  background: rgba(255,255,255,.12);
+  border-color: #e9cbfa;
+}
+@media (max-width: 700px) {
+  .table-community-cta.course-bridge {
+    align-items: stretch;
+    gap: 18px;
+  }
+  .course-bridge-actions {
+    flex: 1 1 auto;
+    width: 100%;
+    gap: 10px;
+  }
+  .course-bridge-primary, .course-bridge-secondary { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .course-bridge-primary, .course-bridge-secondary { transition: none; }
+}
