@@ -75,7 +75,7 @@ import {
 import { ElementComparatorModal } from "./components/ElementComparatorModal.jsx";
 import { MisconceptionsGuideModal, ElementSpellerModal, StudyGuideModal, LaminasViewerModal } from "./components/DeferredModals.jsx";
 import { useModalDialog } from "./hooks/useModalDialog.js";
-import { communityUrl } from "./config.js";
+import { chemistryCourseUrl, communityUrl } from "./config.js";
 import {
   getBestScore,
   getDiagnostic,
@@ -2016,9 +2016,35 @@ function Home() {
         )}
       </section>
 
-      <aside className="table-community-cta" aria-label="Continúa aprendiendo en Academia Zenit">
-        <div><span className="eyebrow">Tu siguiente paso</span><h2>De conocer los elementos a resolver ejercicios.</h2><p>Refuerza química para secundaria o bachillerato, admisión y tus primeros cursos universitarios. Conoce Academia Zenit en Skool: acceso gratuito y membresía premium opcional.</p></div>
-        <a className="skool-primary-cta" href={communityUrl} target="_blank" rel="noopener noreferrer" data-cta-placement="after-table">Unirme gratis a la comunidad <ArrowUpRight size={18} /></a>
+      <aside className="table-community-cta course-bridge" aria-label="Continúa aprendiendo química en Academia Zenit">
+        <div className="course-bridge-copy">
+          <span className="eyebrow">Tu siguiente paso en química</span>
+          <h2>De conocer los elementos a resolver ejercicios.</h2>
+          <p>
+            Ya exploraste la tabla periódica. Descubre Química Zenit: explicaciones visuales,
+            simuladores interactivos y actividades para prepararte para tus evaluaciones.
+          </p>
+        </div>
+        <div className="course-bridge-actions">
+          <a
+            className="course-bridge-primary"
+            href={chemistryCourseUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cta-placement="after-table-course"
+          >
+            Explorar el curso de Química Zenit <ArrowUpRight size={18} aria-hidden="true" />
+          </a>
+          <a
+            className="course-bridge-secondary"
+            href={communityUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cta-placement="after-table-skool"
+          >
+            Ir directamente a Skool <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+        </div>
       </aside>
 
       <section className="learning-mode" aria-labelledby="mode-heading">
