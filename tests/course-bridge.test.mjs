@@ -37,3 +37,27 @@ test("post-table course bridge stacks its CTAs on mobile and supports dark mode"
   assert.match(css, /@media \(max-width: 700px\)\s*\{[\s\S]*?\.course-bridge-actions\s*\{/);
   assert.match(css, /\.course-bridge-actions a:focus-visible/);
 });
+
+
+test("Chemistry course is discoverable before scrolling past the periodic table", async () => {
+  const [app, css] = await Promise.all([read("../src/App.jsx"), read("../src/styles.css")]);
+  const top = app.indexOf('className="top-authority-bar"');
+  const shortcuts = app.indexOf('className="home-shortcuts"');
+  const table = app.indexOf('id="tabla-periodica"');
+  const afterTable = app.indexOf('className="table-community-cta course-bridge"');
+
+  assert.ok(top >= 0 && shortcuts > top && table > shortcuts && afterTable > table);
+  const topbar = app.slice(top, shortcuts);
+  const nav = app.slice(shortcuts, table);
+  assert.match(topbar, /data-cta-placement="top-course"/);
+  assert.match(topbar, /href=\{chemistryCourseUrl\}/);
+  assert.match(topbar, /Explorar Química Zenit/);
+  assert.match(nav, /className="download-community chemistry-shortcut"/);
+  assert.match(nav, /href=\{chemistryCourseUrl\}/);
+  assert.match(nav, /data-cta-placement="before-table-course"/);
+  assert.match(nav, /Conocer Química Zenit/);
+  assert.match(css, /\.home-shortcuts \.chemistry-shortcut\s*\{/);
+  assert.match(css, /\.home-shortcuts \.chemistry-shortcut a\.chemistry-shortcut-link\s*\{/);
+  assert.match(css, /\[data-theme="dark"\] \.home-shortcuts \.chemistry-shortcut/);
+  assert.match(css, /@media \(max-width: 700px\)\s*\{\s*\.home-shortcuts \.chemistry-shortcut\s*\{/);
+});
