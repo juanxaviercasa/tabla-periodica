@@ -826,7 +826,7 @@ function Layout({ children }) {
 
   return (
     <div className="app-shell">
-      {/* Top Authority Bar: Academia Zenit en Skool */}
+      {/* Top Authority Bar: an always-visible path from the free tool to Química Zenit */}
       <div className="top-authority-bar">
         <div className="top-authority-inner">
           <div className="top-authority-left">
@@ -835,17 +835,18 @@ function Layout({ children }) {
               <span>Academia Zenit</span>
             </span>
             <span className="top-authority-text">
-              Química para Latinoamérica · Comunidad en Skool
+              De la tabla periódica a la práctica · Química Zenit
             </span>
           </div>
           <a
-            href={communityUrl}
+            href={chemistryCourseUrl}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="top-authority-link"
-            title="Conocer la comunidad Academia Zenit en Skool (Gratis y Premium)"
+            data-cta-placement="top-course"
+            title="Explorar el curso preuniversitario de Química Zenit"
           >
-            <span>Unirme gratis a la comunidad</span>
+            <span>Explorar Química Zenit</span>
             <ArrowUpRight size={13} aria-hidden="true" />
           </a>
         </div>
@@ -1323,7 +1324,15 @@ function Home() {
       <LaminasStudySection />
       <nav className="home-shortcuts" aria-label="Accesos de estudio">
         <a href="#tabla-periodica" onClick={() => requestAnimationFrame(() => document.getElementById("tabla-periodica")?.focus({ preventScroll: true }))}>Ver tabla periódica <ChevronDown size={16} /></a>
-        <div className="download-community"><span>Ya tienes tu tabla. Aprende a utilizarla en Academia Zenit, nuestra comunidad en Skool.</span><a className="skool-primary-cta" href={communityUrl} target="_blank" rel="noopener noreferrer" data-cta-placement="downloads">Unirme gratis a la comunidad <ArrowUpRight size={16} /></a></div>
+        <div className="download-community chemistry-shortcut" aria-label="Descubre el curso de Química Zenit">
+          <div className="chemistry-shortcut-copy">
+            <strong>¿Listo para resolver ejercicios de química?</strong>
+            <span>Continúa con explicaciones, simuladores y práctica guiada.</span>
+          </div>
+          <a className="chemistry-shortcut-link" href={chemistryCourseUrl} target="_blank" rel="noopener noreferrer" data-cta-placement="before-table-course">
+            Conocer Química Zenit <ArrowUpRight size={17} aria-hidden="true" />
+          </a>
+        </div>
       </nav>
 
       <section id="tabla-periodica" tabIndex={-1} className={`table-section mode-${tableMode}`} aria-labelledby="table-heading">
