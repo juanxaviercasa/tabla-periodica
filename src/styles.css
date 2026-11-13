@@ -13491,3 +13491,85 @@ button { cursor: pointer; } a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .course-bridge-primary, .course-bridge-secondary { transition: none; }
 }
+
+/* Course access at the top of the page, BEFORE the 118-element table.
+   Give the learner a visible next step without covering or shrinking the periodic table. */
+.home-shortcuts { align-items: stretch; }
+.home-shortcuts > a:first-child { align-self: center; flex: 0 0 auto; }
+.home-shortcuts .chemistry-shortcut {
+  flex: 1 1 630px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px 22px;
+  padding: 15px 17px;
+  border: 1px solid rgba(107,45,140,.32);
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(107,45,140,.11), rgba(107,45,140,.035));
+  box-shadow: 0 6px 22px rgba(63,22,93,.06);
+}
+.chemistry-shortcut-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 4px;
+  line-height: 1.4;
+}
+.chemistry-shortcut-copy strong { font-size: 15px; font-weight: 800; color: #39204b; }
+.chemistry-shortcut-copy span { font-size: 12px; color: #66586f; }
+.home-shortcuts .chemistry-shortcut a.chemistry-shortcut-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 11px 16px;
+  border: 1px solid #6b2d8c;
+  border-radius: 10px;
+  background: #6b2d8c;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.home-shortcuts .chemistry-shortcut a.chemistry-shortcut-link:hover {
+  background: #552370;
+  border-color: #552370;
+}
+.home-shortcuts .chemistry-shortcut a.chemistry-shortcut-link:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
+}
+[data-theme="dark"] .home-shortcuts .chemistry-shortcut {
+  background: linear-gradient(120deg, rgba(139,77,176,.18), rgba(139,77,176,.06));
+  border-color: rgba(212,167,239,.35);
+  box-shadow: none;
+}
+[data-theme="dark"] .chemistry-shortcut-copy strong { color: #f0ddff; }
+[data-theme="dark"] .chemistry-shortcut-copy span { color: #d2bbdf; }
+[data-theme="dark"] .home-shortcuts .chemistry-shortcut a.chemistry-shortcut-link {
+  background: #8541a7;
+  border-color: #8541a7;
+  color: #fff;
+}
+[data-theme="dark"] .home-shortcuts .chemistry-shortcut a.chemistry-shortcut-link:hover {
+  background: #9b56bc;
+  border-color: #9b56bc;
+}
+@media (max-width: 700px) {
+  .home-shortcuts .chemistry-shortcut {
+    flex: 1 1 100%;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 15px;
+    gap: 12px;
+  }
+  .home-shortcuts .chemistry-shortcut a.chemistry-shortcut-link {
+    width: 100%;
+    white-space: normal;
+  }
+}
